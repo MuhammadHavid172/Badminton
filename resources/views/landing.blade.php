@@ -12,8 +12,8 @@
     <div class="pola-titik" style="position: absolute; inset: 0; opacity: 0.35; pointer-events: none;" aria-hidden="true"></div>
 
     <div class="kontainer hero-content">
-        <div>
-            <x-penanda teks="SISTEM BOOKING GOR" style="margin-bottom: var(--spasi-3);" />
+        <div class="hero-main-block">
+            <x-penanda teks="SISTEM BOOKING GOR" />
             
             {{-- Satu h1 tunggal di halaman --}}
             <h1 class="hero-judul">
