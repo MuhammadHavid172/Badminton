@@ -25,7 +25,7 @@ class LandingPageTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Saatnya');
         $response->assertSee('Turun');
-        $response->assertSee('Lapangan.');
+        $response->assertSee('Lapangan');
     }
 
     /**

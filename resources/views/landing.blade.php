@@ -19,7 +19,7 @@
             <h1 class="hero-judul">
                 <span>Saatnya</span>
                 <span class="teks-lime">Turun</span>
-                <span>Lapangan.</span>
+                <span>Lapangan</span>
             </h1>
         </div>
 

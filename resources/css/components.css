@@ -657,6 +657,10 @@ details[open] .faq-icon {
     pointer-events: none;
 }
 
+.hero-section .kontainer {
+    max-width: 1540px;
+}
+
 .hero-content {
     position: relative;
     z-index: 2;
@@ -668,9 +672,10 @@ details[open] .faq-icon {
 
 .hero-judul {
     font-family: var(--font-judul);
-    font-size: clamp(2rem, 7vw, 6.2rem);
+    font-size: clamp(2.6rem, 6.9vw, 6.8rem);
     font-weight: 600;
-    line-height: 0.95;
+    text-transform: uppercase;
+    line-height: 0.92;
     letter-spacing: var(--tracking-judul);
     display: flex;
     justify-content: space-between;
@@ -777,7 +782,9 @@ details[open] .faq-icon {
     .hero-judul {
         flex-direction: column;
         align-items: flex-start;
-        gap: var(--spasi-1);
+        gap: 0;
+        font-size: clamp(3.2rem, 14vw, 5rem);
+        line-height: 0.9;
         margin-top: var(--spasi-2);
         margin-bottom: var(--spasi-2);
     }
