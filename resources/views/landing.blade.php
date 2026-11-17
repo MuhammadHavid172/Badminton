@@ -223,7 +223,7 @@
                     </ul>
                 </div>
 
-                <div>
+                <div class="harga-cta-wrap">
                     <x-cta href="{{ route('jadwal') }}" teks="PILIH HARIAN" />
                 </div>
             </div>
@@ -266,7 +266,7 @@
                     </ul>
                 </div>
 
-                <div>
+                <div class="harga-cta-wrap">
                     <x-cta href="{{ route('jadwal') }}" teks="PILIH BULANAN" />
                 </div>
             </div>
