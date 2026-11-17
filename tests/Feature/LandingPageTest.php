@@ -17,15 +17,15 @@ class LandingPageTest extends TestCase
     }
 
     /**
-     * Memastikan beranda memuat tiga kata raksasa hero: "Lihat.", "Booking.", "Main.".
+     * Memastikan beranda memuat kalimat raksasa hero: "Saatnya", "Turun", "Lapangan.".
      */
     public function test_beranda_memuat_tiga_kata_hero(): void
     {
         $response = $this->get('/');
         $response->assertStatus(200);
-        $response->assertSee('Lihat.');
-        $response->assertSee('Booking.');
-        $response->assertSee('Main.');
+        $response->assertSee('Saatnya');
+        $response->assertSee('Turun');
+        $response->assertSee('Lapangan.');
     }
 
     /**

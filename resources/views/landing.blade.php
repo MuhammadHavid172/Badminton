@@ -17,23 +17,23 @@
             
             {{-- Satu h1 tunggal di halaman --}}
             <h1 class="hero-judul">
-                <span>Lihat.</span>
-                <span class="teks-lime">Booking.</span>
-                <span>Main.</span>
+                <span>Saatnya</span>
+                <span class="teks-lime">Turun</span>
+                <span>Lapangan.</span>
             </h1>
 
             <div class="hero-grid-sub">
                 <div class="hero-sub-item">
-                    <span class="hero-sub-label">01. Lihat</span>
+                    <span class="hero-sub-label">01. Cek Jadwal</span>
                     <p>Jadwal semua lapangan terbuka. Slot kosong langsung kelihatan.</p>
                 </div>
                 <div class="hero-sub-item">
-                    <span class="hero-sub-label">02. Booking</span>
+                    <span class="hero-sub-label">02. Kunci Slot</span>
                     <p>Pilih Harian atau Bulanan. Slot ditahan sampai kamu bayar.</p>
                 </div>
                 <div class="hero-sub-item">
-                    <span class="hero-sub-label">03. Main</span>
-                    <p>Datang, tunjukkan kode booking, langsung main.</p>
+                    <span class="hero-sub-label">03. Siap Main</span>
+                    <p>Datang, tunjukkan kode booking ke petugas, langsung main.</p>
                 </div>
             </div>
         </div>
@@ -193,29 +193,6 @@
 
         <div class="pilih-lapangan-bawah">
             <x-cta href="{{ route('jadwal') }}" teks="LIHAT JADWAL" />
-
-            {{-- Foto kecil lapangan: hanya dirender jika file ada --}}
-            @php
-                $adaPratinjau = false;
-                for ($n = 1; $n <= 3; $n++) {
-                    if (file_exists(public_path("images/lapangan-{$n}.jpg"))) {
-                        $adaPratinjau = true;
-                        break;
-                    }
-                }
-            @endphp
-
-            @if ($adaPratinjau)
-                <div class="lapangan-pratinjau-deret">
-                    @for ($n = 1; $n <= 3; $n++)
-                        @if (file_exists(public_path("images/lapangan-{$n}.jpg")))
-                            <div class="lapangan-pratinjau-kotak">
-                                <x-foto nama="lapangan-{{ $n }}.jpg" alt="Pratinjau Lapangan {{ $n }}" :width="800" :height="600" :lazy="false" />
-                            </div>
-                        @endif
-                    @endfor
-                </div>
-            @endif
         </div>
     </div>
 </section>
