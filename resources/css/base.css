@@ -1,0 +1,215 @@
+/**
+ * Badminton Booking - Base Styles & Typography
+ * Anti AI Slop: Tanpa glow, tanpa teks gradient, tanpa bayangan warna.
+ */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    background-color: var(--hitam);
+    color: var(--putih);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    min-height: 100vh;
+    font-family: var(--font-isi);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: var(--lead-normal);
+    color: var(--putih);
+    background-color: var(--hitam);
+    overflow-x: hidden;
+}
+
+/* Tautan Lompat ke Konten (Aksesibilitas) */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: var(--spasi-3);
+    z-index: 9999;
+    padding: var(--spasi-2) var(--spasi-3);
+    background-color: var(--lime);
+    color: var(--hitam);
+    font-family: var(--font-judul);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: var(--radius-pil);
+    transition: top var(--transisi-cepat);
+}
+
+.skip-link:focus {
+    top: var(--spasi-3);
+    outline: 2px solid var(--putih);
+    outline-offset: 2px;
+}
+
+/* Indikator Fokus Aksesibilitas */
+:focus-visible {
+    outline: 2px solid var(--lime);
+    outline-offset: 3px;
+}
+
+/* Tipografi Utama */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-judul);
+    font-weight: 600;
+    line-height: var(--lead-rapat);
+    letter-spacing: var(--tracking-judul);
+    color: var(--putih);
+    text-align: left;
+}
+
+p {
+    color: var(--teks-redup);
+    font-size: 1rem;
+    line-height: var(--lead-normal);
+    text-align: left;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img,
+picture,
+video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* Utilitas Tata Letak */
+.kontainer {
+    width: 100%;
+    max-width: var(--max-lebar);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--spasi-3);
+    padding-right: var(--spasi-3);
+}
+
+@media (min-width: 768px) {
+    .kontainer {
+        padding-left: var(--spasi-6);
+        padding-right: var(--spasi-6);
+    }
+}
+
+@media (min-width: 1200px) {
+    .kontainer {
+        padding-left: var(--spasi-8);
+        padding-right: var(--spasi-8);
+    }
+}
+
+/* Pola Titik Halus (Tekstur Cadangan Tanpa Foto) */
+.pola-titik {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px);
+    background-size: 28px 28px;
+    background-position: 0 0;
+}
+
+/* Pemisah Garis Tipis */
+.pemisah {
+    border: none;
+    height: 1px;
+    background-color: var(--garis);
+    margin: 0;
+    width: 100%;
+}
+
+/* Efek Scrim Gelap untuk Keterbacaan Teks di Atas Foto */
+.scrim-bawah {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(13, 13, 11, 0.25) 0%, rgba(13, 13, 11, 0.75) 60%, rgba(13, 13, 11, 0.96) 100%);
+    pointer-events: none;
+}
+
+.scrim-penuh {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(13, 13, 11, 0.6) 0%, rgba(13, 13, 11, 0.85) 100%);
+    pointer-events: none;
+}
+
+.scrim-hero {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(18, 43, 65, 0.45) 0%, rgba(13, 13, 11, 0.88) 85%);
+    pointer-events: none;
+}
+
+/* Utilitas Aksen Teks */
+.teks-lime {
+    color: var(--lime);
+}
+
+.teks-putih {
+    color: var(--putih);
+}
+
+.teks-redup {
+    color: var(--teks-redup);
+}
+
+.tag-contoh {
+    display: inline-block;
+    font-family: var(--font-judul);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--teks-redup);
+    border: 1px solid var(--garis);
+    padding: 2px var(--spasi-1);
+    border-radius: var(--radius-pil);
+    margin-left: var(--spasi-1);
+    vertical-align: middle;
+}
+
+/* Animasi Masuk Viewport (IntersectionObserver) */
+.reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity var(--transisi-reveal), transform var(--transisi-reveal);
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Preferensi Pengurangan Gerak */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .reveal {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .marquee-track {
+        animation: none !important;
+    }
+}

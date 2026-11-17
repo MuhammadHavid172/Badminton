@@ -1,0 +1,1112 @@
+/**
+ * Badminton Booking - Components
+ * Sesuai Sistem Desain & Anti AI Slop.
+ * Tanpa glow, tanpa bayangan warna, tanpa gradient teks.
+ */
+
+/* ==========================================================================
+   1. NAVBAR
+   ========================================================================== */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color var(--transisi-normal), border-color var(--transisi-normal);
+}
+
+/* Blur dan latar solid HANYA untuk navbar saat digulir */
+.navbar.is-scrolled {
+    background-color: rgba(13, 13, 11, 0.88);
+    border-bottom-color: var(--garis);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+}
+
+.navbar-nav {
+    display: none;
+    align-items: center;
+    gap: var(--spasi-4);
+    list-style: none;
+}
+
+.navbar-link {
+    font-family: var(--font-isi);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--teks-redup);
+    transition: color var(--transisi-cepat);
+    padding: var(--spasi-1) 0;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.navbar-link:hover {
+    color: var(--putih);
+}
+
+.navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spasi-2);
+    min-height: 44px;
+}
+
+.navbar-brand-name {
+    font-family: var(--font-judul);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: var(--tracking-label);
+    color: var(--putih);
+    text-transform: uppercase;
+}
+
+.navbar-actions {
+    display: none;
+    align-items: center;
+    gap: var(--spasi-3);
+}
+
+.navbar-actions .link-masuk {
+    font-family: var(--font-judul);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--putih);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    padding: 0 var(--spasi-2);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    transition: color var(--transisi-cepat);
+}
+
+.navbar-actions .link-masuk:hover {
+    color: var(--lime);
+}
+
+/* Tombol Hamburger Mobile */
+.navbar-hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    gap: 6px;
+    padding: 0;
+    z-index: 1100;
+}
+
+.hamburger-line {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--putih);
+    transition: transform var(--transisi-normal), opacity var(--transisi-normal);
+}
+
+/* Status Menu Hamburger Terbuka */
+.navbar-hamburger.is-active .hamburger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.navbar-hamburger.is-active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.navbar-hamburger.is-active .hamburger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Menu Mobile Layar Penuh */
+.mobile-menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background-color: var(--hitam);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 96px var(--spasi-4) var(--spasi-6);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity var(--transisi-normal), visibility var(--transisi-normal);
+}
+
+.mobile-menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.mobile-menu-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-3);
+}
+
+.mobile-menu-link {
+    font-family: var(--font-judul);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--putih);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-judul);
+    display: inline-block;
+    padding: var(--spasi-1) 0;
+    min-height: 44px;
+    transition: color var(--transisi-cepat);
+}
+
+.mobile-menu-link:hover {
+    color: var(--lime);
+}
+
+.mobile-menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-2);
+    padding-top: var(--spasi-4);
+    border-top: 1px solid var(--garis);
+}
+
+@media (min-width: 900px) {
+    .navbar-nav {
+        display: flex;
+    }
+
+    .navbar-actions {
+        display: flex;
+    }
+
+    .navbar-hamburger {
+        display: none;
+    }
+
+    .mobile-menu {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   2. LOGO (SVG Titik-Titik Kok Badminton)
+   ========================================================================== */
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+/* ==========================================================================
+   3. CTA LANDING (Teks Limau Bergaris Bawah + Panah ↗)
+   ========================================================================== */
+.cta-landing {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-judul);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--lime);
+    text-decoration: none;
+    position: relative;
+    padding: var(--spasi-1) 0;
+    min-height: 44px;
+    border-bottom: 1.5px solid var(--lime);
+    transition: border-color var(--transisi-cepat), color var(--transisi-cepat);
+}
+
+.cta-landing .panah {
+    display: inline-block;
+    transition: transform var(--transisi-cepat);
+    font-size: 1.1em;
+    line-height: 1;
+}
+
+.cta-landing:hover {
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+}
+
+.cta-landing:hover .panah {
+    transform: translate(3px, -3px);
+}
+
+/* ==========================================================================
+   4. TOMBOL (Solid Pil Limau, Sekunder Outline, Ghost)
+   ========================================================================== */
+.tombol {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spasi-1);
+    font-family: var(--font-judul);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    border-radius: var(--radius-pil);
+    padding: 12px 28px;
+    min-height: 44px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: none;
+    transition: background-color var(--transisi-cepat), transform var(--transisi-cepat), border-color var(--transisi-cepat), color var(--transisi-cepat);
+}
+
+/* Solid: Pil limau, teks hitam, menggelap saat hover tanpa glow */
+.tombol-solid {
+    background-color: var(--lime);
+    color: var(--hitam);
+    border: 1px solid var(--lime);
+}
+
+.tombol-solid:hover {
+    background-color: var(--lime-hover);
+    border-color: var(--lime-hover);
+    transform: translateY(-1px);
+}
+
+.tombol-solid:active {
+    transform: translateY(0);
+}
+
+/* Sekunder: Pil outline garis tipis, teks putih */
+.tombol-sekunder {
+    background-color: transparent;
+    color: var(--putih);
+    border: 1px solid var(--garis);
+}
+
+.tombol-sekunder:hover {
+    border-color: var(--garis-terang);
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
+}
+
+.tombol-sekunder:active {
+    transform: translateY(0);
+}
+
+/* Ghost: Teks saja tanpa latar */
+.tombol-ghost {
+    background-color: transparent;
+    color: var(--teks-redup);
+    border: 1px solid transparent;
+}
+
+.tombol-ghost:hover {
+    color: var(--putih);
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   5. PENANDA SECTION (Pil Outline Tipis + Titik Limau)
+   ========================================================================== */
+.penanda {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-pil);
+    font-family: var(--font-judul);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--putih);
+    background-color: transparent;
+    width: fit-content;
+}
+
+.penanda-titik {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--lime);
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   6. KARTU (Radius 24px, Latar --hitam-2, Garis --garis, Tanpa Bayangan)
+   ========================================================================== */
+.kartu {
+    background-color: var(--hitam-2);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-kartu);
+    box-shadow: none;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ==========================================================================
+   7. BADGE KATEGORI (BULANAN Pil Penuh Putih, HARIAN Pil Outline Putih)
+   ========================================================================== */
+.badge-kategori {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-judul);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 5px 14px;
+    border-radius: var(--radius-pil);
+    line-height: 1;
+}
+
+.badge-kategori.bulanan {
+    background-color: var(--putih);
+    color: var(--hitam);
+    border: 1px solid var(--putih);
+}
+
+.badge-kategori.harian {
+    background-color: transparent;
+    color: var(--putih);
+    border: 1px solid var(--putih);
+}
+
+/* ==========================================================================
+   8. KOMPONEN FOTO (<x-foto> & Fallback Gradient + Titik)
+   ========================================================================== */
+.foto-wadah {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.foto-elemen {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.foto-fallback {
+    width: 100%;
+    height: 100%;
+    min-height: 200px;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--hitam) 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.foto-fallback::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.2px, transparent 1.2px);
+    background-size: 24px 24px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   9. MARQUEE STRIP
+   ========================================================================== */
+.marquee-wrapper {
+    width: 100%;
+    overflow: hidden;
+    border-top: 1px solid var(--garis);
+    border-bottom: 1px solid var(--garis);
+    background-color: var(--hitam);
+    padding: var(--spasi-3) 0;
+    user-select: none;
+}
+
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-anim 35s linear infinite;
+}
+
+.marquee-track:hover {
+    animation-play-state: paused;
+}
+
+.marquee-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spasi-4);
+    padding-right: var(--spasi-4);
+}
+
+.marquee-item {
+    font-family: var(--font-judul);
+    font-size: clamp(1.25rem, 3vw, 2.25rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: rgba(255, 255, 255, 0.48);
+    white-space: nowrap;
+}
+
+.marquee-separator {
+    color: var(--lime);
+    font-size: 0.8em;
+}
+
+@keyframes marquee-anim {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* ==========================================================================
+   10. DERETAN KARTU GESER HORIZONTAL (CARA BOOKING)
+   ========================================================================== */
+.scroll-kartu-pembungkus {
+    position: relative;
+    width: 100%;
+}
+
+.scroll-kartu-deretan {
+    display: flex;
+    gap: var(--spasi-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: var(--spasi-2);
+}
+
+.scroll-kartu-deretan::-webkit-scrollbar {
+    display: none;
+}
+
+.kartu-langkah {
+    flex: 0 0 280px;
+    min-width: 280px;
+    max-width: 320px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spasi-4);
+}
+
+@media (min-width: 768px) {
+    .kartu-langkah {
+        flex: 0 0 340px;
+        min-width: 340px;
+        padding: var(--spasi-5);
+    }
+}
+
+.langkah-angka {
+    font-family: var(--font-judul);
+    font-size: 3rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--lime);
+    margin-bottom: var(--spasi-3);
+}
+
+.langkah-judul {
+    font-family: var(--font-judul);
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: var(--lead-rapat);
+    letter-spacing: var(--tracking-judul);
+    color: var(--putih);
+    margin-bottom: var(--spasi-2);
+}
+
+.langkah-foto {
+    width: 100%;
+    height: 180px;
+    border-radius: 16px;
+    margin-bottom: var(--spasi-3);
+    overflow: hidden;
+}
+
+.langkah-nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--garis);
+    background-color: transparent;
+    color: var(--putih);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color var(--transisi-cepat), background-color var(--transisi-cepat);
+}
+
+.langkah-nav-btn:hover {
+    border-color: var(--putih);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ==========================================================================
+   11. FAQ ACCORDION (NATIVE DETAILS & SUMMARY)
+   ========================================================================== */
+.faq-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--garis);
+}
+
+.faq-item:first-child {
+    border-top: 1px solid var(--garis);
+}
+
+.faq-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spasi-4) 0;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-judul);
+    font-size: clamp(1.125rem, 2vw, 1.375rem);
+    font-weight: 500;
+    color: var(--putih);
+    min-height: 44px;
+    transition: color var(--transisi-cepat);
+}
+
+.faq-summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-summary:hover {
+    color: var(--lime);
+}
+
+.faq-icon {
+    font-family: var(--font-isi);
+    font-size: 1.5rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--lime);
+    transition: transform var(--transisi-normal);
+}
+
+details[open] .faq-icon {
+    transform: rotate(45deg);
+}
+
+.faq-body {
+    padding-bottom: var(--spasi-4);
+    font-size: 1rem;
+    line-height: var(--lead-normal);
+    color: var(--teks-redup);
+    max-width: 720px;
+}
+
+/* ==========================================================================
+   12. TATA LETAK SECTION LANDING PAGE
+   ========================================================================== */
+.hero-section {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    padding-top: 100px;
+    padding-bottom: var(--spasi-6);
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--navy) 0%, var(--hitam) 90%);
+}
+
+.hero-bg-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.hero-judul {
+    font-family: var(--font-judul);
+    font-size: clamp(3.2rem, 11vw, 11rem);
+    font-weight: 600;
+    line-height: 0.92;
+    letter-spacing: var(--tracking-judul);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    margin-top: var(--spasi-4);
+    margin-bottom: var(--spasi-2);
+}
+
+.hero-grid-sub {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spasi-4);
+    width: 100%;
+    margin-top: var(--spasi-3);
+    margin-bottom: var(--spasi-6);
+}
+
+.hero-sub-item {
+    font-size: clamp(0.875rem, 1.1vw, 1rem);
+    color: var(--teks-redup);
+    line-height: 1.4;
+    max-width: 320px;
+}
+
+.hero-sub-label {
+    display: block;
+    font-family: var(--font-judul);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--lime);
+    margin-bottom: 4px;
+}
+
+.hero-bottom-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spasi-4);
+    width: 100%;
+    margin-top: auto;
+    padding-top: var(--spasi-6);
+    border-top: 1px solid var(--garis);
+}
+
+.hero-jam-kartu {
+    background-color: rgba(22, 22, 19, 0.7);
+    border: 1px solid var(--garis);
+    border-radius: 16px;
+    padding: var(--spasi-2) var(--spasi-3);
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.hero-jam-label {
+    font-family: var(--font-judul);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--teks-redup);
+}
+
+.hero-jam-nilai {
+    font-family: var(--font-judul);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--putih);
+}
+
+.hero-scroll-hint {
+    font-size: 0.8125rem;
+    color: var(--teks-redup);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    align-self: center;
+}
+
+@media (min-width: 768px) {
+    .hero-grid-sub {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .hero-bottom-bar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .hero-scroll-hint {
+        align-self: auto;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero-section {
+        padding-top: 84px;
+        padding-bottom: var(--spasi-4);
+    }
+
+    .hero-judul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spasi-1);
+        margin-top: var(--spasi-2);
+        margin-bottom: var(--spasi-2);
+    }
+
+    .hero-grid-sub {
+        gap: var(--spasi-2);
+        margin-top: var(--spasi-2);
+        margin-bottom: var(--spasi-4);
+    }
+
+    .hero-bottom-bar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: var(--spasi-3);
+    }
+
+    .hero-scroll-hint {
+        display: none;
+    }
+}
+
+/* Section Pernyataan */
+.pernyataan-section {
+    position: relative;
+    padding: var(--spasi-16) 0;
+    background-color: var(--hitam);
+    overflow: hidden;
+}
+
+.pernyataan-judul {
+    font-size: clamp(2.25rem, 5.5vw, 4.5rem);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-judul);
+    line-height: var(--lead-rapat);
+    text-align: center;
+    max-width: 860px;
+    margin: var(--spasi-4) auto var(--spasi-4);
+}
+
+.pernyataan-teks {
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    max-width: 680px;
+    margin: 0 auto var(--spasi-6);
+    text-align: center;
+    color: var(--teks-redup);
+    line-height: var(--lead-normal);
+}
+
+/* Section Cara Booking */
+.cara-booking-section {
+    padding: var(--spasi-16) 0;
+    background-color: var(--hitam);
+    border-top: 1px solid var(--garis);
+}
+
+.cara-booking-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spasi-4);
+    margin-bottom: var(--spasi-6);
+    flex-wrap: wrap;
+}
+
+.cara-booking-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spasi-2);
+}
+
+/* Section Pilih Lapangan */
+.pilih-lapangan-section {
+    position: relative;
+    padding: var(--spasi-16) 0;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--hitam) 90%);
+    overflow: hidden;
+    border-top: 1px solid var(--garis);
+}
+
+.pilih-lapangan-judul {
+    font-family: var(--font-judul);
+    font-size: clamp(3rem, 9vw, 8rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: var(--tracking-judul);
+    color: var(--lime);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spasi-2);
+    margin: var(--spasi-8) 0;
+}
+
+.lapangan-pil-daftar {
+    display: flex;
+    gap: var(--spasi-2);
+    flex-wrap: wrap;
+    margin-top: var(--spasi-4);
+}
+
+.lapangan-pil-item {
+    font-family: var(--font-judul);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    padding: 6px 16px;
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-pil);
+    color: var(--putih);
+    background-color: rgba(22, 22, 19, 0.6);
+}
+
+.pilih-lapangan-bawah {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-4);
+    margin-top: var(--spasi-6);
+}
+
+@media (min-width: 768px) {
+    .pilih-lapangan-bawah {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+}
+
+.lapangan-pratinjau-deret {
+    display: flex;
+    gap: var(--spasi-2);
+}
+
+.lapangan-pratinjau-kotak {
+    width: 140px;
+    height: 95px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--garis);
+}
+
+/* Section Harga */
+.harga-section {
+    padding: var(--spasi-16) 0;
+    background-color: var(--hitam);
+    border-top: 1px solid var(--garis);
+}
+
+.harga-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-kartu);
+    background-color: var(--hitam-2);
+    overflow: hidden;
+    margin-top: var(--spasi-8);
+}
+
+@media (min-width: 820px) {
+    .harga-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .harga-col:first-child {
+        border-right: 1px solid var(--garis);
+    }
+}
+
+.harga-col {
+    padding: var(--spasi-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-4);
+}
+
+@media (min-width: 1024px) {
+    .harga-col {
+        padding: var(--spasi-8);
+    }
+}
+
+.harga-angka-grup {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spasi-1);
+    flex-wrap: wrap;
+}
+
+.harga-angka {
+    font-family: var(--font-judul);
+    font-size: clamp(2.5rem, 5vw, 4.25rem);
+    font-weight: 600;
+    line-height: 0.95;
+    letter-spacing: var(--tracking-judul);
+    color: var(--lime);
+}
+
+.harga-periode {
+    font-size: 0.9375rem;
+    color: var(--teks-redup);
+}
+
+.harga-fitur-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-2);
+    margin: var(--spasi-4) 0;
+    padding-top: var(--spasi-4);
+    border-top: 1px solid var(--garis);
+}
+
+.harga-fitur-item {
+    font-size: 0.9375rem;
+    color: var(--teks-redup);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spasi-2);
+    line-height: 1.45;
+}
+
+.harga-fitur-titik {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--lime);
+    margin-top: 8px;
+    flex-shrink: 0;
+}
+
+/* Section FAQ */
+.faq-section {
+    padding: var(--spasi-16) 0;
+    background-color: var(--hitam);
+    border-top: 1px solid var(--garis);
+}
+
+/* Section Penutup Besar (CTA) */
+.penutup-section {
+    position: relative;
+    padding: var(--spasi-20) 0;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(180deg, var(--hitam) 0%, var(--navy) 100%);
+    overflow: hidden;
+    border-top: 1px solid var(--garis);
+}
+
+.penutup-judul {
+    font-family: var(--font-judul);
+    font-size: clamp(3rem, 10vw, 8.5rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: var(--tracking-judul);
+    margin-bottom: var(--spasi-6);
+    text-align: center;
+}
+
+.penutup-aksi {
+    display: flex;
+    gap: var(--spasi-4);
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   13. FOOTER
+   ========================================================================== */
+.site-footer {
+    border-top: 1px solid var(--garis);
+    background-color: var(--hitam);
+    padding: var(--spasi-10) 0 var(--spasi-6);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spasi-6);
+    margin-bottom: var(--spasi-8);
+}
+
+@media (min-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 2fr 1fr 1fr;
+    }
+}
+
+.footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-2);
+    list-style: none;
+}
+
+.footer-link {
+    color: var(--teks-redup);
+    font-size: 0.9375rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    transition: color var(--transisi-cepat);
+}
+
+.footer-link:hover {
+    color: var(--lime);
+}
+
+.footer-bottom {
+    padding-top: var(--spasi-4);
+    border-top: 1px solid var(--garis);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-2);
+    font-size: 0.8125rem;
+    color: var(--teks-redup);
+}
+
+@media (min-width: 768px) {
+    .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
