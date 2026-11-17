@@ -21,21 +21,6 @@
                 <span class="teks-lime">Turun</span>
                 <span>Lapangan.</span>
             </h1>
-
-            <div class="hero-grid-sub">
-                <div class="hero-sub-item">
-                    <span class="hero-sub-label">01. Cek Jadwal</span>
-                    <p>Jadwal semua lapangan terbuka. Slot kosong langsung kelihatan.</p>
-                </div>
-                <div class="hero-sub-item">
-                    <span class="hero-sub-label">02. Kunci Slot</span>
-                    <p>Pilih Harian atau Bulanan. Slot ditahan sampai kamu bayar.</p>
-                </div>
-                <div class="hero-sub-item">
-                    <span class="hero-sub-label">03. Siap Main</span>
-                    <p>Datang, tunjukkan kode booking ke petugas, langsung main.</p>
-                </div>
-            </div>
         </div>
 
         <div class="hero-bottom-bar">
