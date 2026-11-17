@@ -668,16 +668,16 @@ details[open] .faq-icon {
 
 .hero-judul {
     font-family: var(--font-judul);
-    font-size: clamp(3.2rem, 11vw, 11rem);
+    font-size: clamp(2rem, 7vw, 6.2rem);
     font-weight: 600;
-    line-height: 0.92;
+    line-height: 0.95;
     letter-spacing: var(--tracking-judul);
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     width: 100%;
     margin-top: var(--spasi-4);
-    margin-bottom: var(--spasi-2);
+    margin-bottom: var(--spasi-4);
 }
 
 .hero-grid-sub {
