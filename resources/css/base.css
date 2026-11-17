@@ -135,22 +135,25 @@ video {
 .scrim-bawah {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(13, 13, 11, 0.25) 0%, rgba(13, 13, 11, 0.75) 60%, rgba(13, 13, 11, 0.96) 100%);
+    background: linear-gradient(180deg, rgba(13, 13, 11, 0.25) 0%, rgba(13, 13, 11, 0.7) 60%, rgba(13, 13, 11, 0.94) 100%);
     pointer-events: none;
+    z-index: 2;
 }
 
 .scrim-penuh {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(13, 13, 11, 0.6) 0%, rgba(13, 13, 11, 0.85) 100%);
+    background: linear-gradient(180deg, rgba(13, 13, 11, 0.45) 0%, rgba(13, 13, 11, 0.78) 100%);
     pointer-events: none;
+    z-index: 2;
 }
 
 .scrim-hero {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(18, 43, 65, 0.45) 0%, rgba(13, 13, 11, 0.88) 85%);
+    background: radial-gradient(circle at center, rgba(18, 43, 65, 0.35) 0%, rgba(13, 13, 11, 0.85) 90%);
     pointer-events: none;
+    z-index: 2;
 }
 
 /* Utilitas Aksen Teks */

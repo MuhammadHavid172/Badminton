@@ -46,10 +46,20 @@ async function run() {
             console.log(`✓ Tidak ada scroll horizontal pada lebar ${vp.width}px`);
         }
 
-        // Pastikan semua animasi reveal terpicu saat screenshot fullPage
-        await page.evaluate(() => {
+        // Scroll down untuk memicu pemuatan seluruh gambar lazy-load dan animasi reveal
+        await page.evaluate(async () => {
+            const distance = 500;
+            const totalHeight = document.body.scrollHeight;
+            let current = 0;
+            while (current < totalHeight) {
+                window.scrollBy(0, distance);
+                current += distance;
+                await new Promise(r => setTimeout(r, 60));
+            }
+            window.scrollTo(0, 0);
             document.querySelectorAll('.reveal').forEach(el => el.classList.add('is-visible'));
         });
+        await page.waitForTimeout(800);
 
         // Ambil screenshot full page untuk dokumentasi
         const screenshotPath = path.join(outDir, `landing-${vp.name}.png`);

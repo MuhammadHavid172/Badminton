@@ -4,6 +4,7 @@
     'width' => 1200,
     'height' => 800,
     'isHero' => false,
+    'lazy' => true,
     'class' => '',
 ])
 
@@ -57,8 +58,10 @@
             class="foto-elemen"
             @if ($isHero)
                 fetchpriority="high"
-            @else
+            @elseif ($lazy)
                 loading="lazy"
+                decoding="async"
+            @else
                 decoding="async"
             @endif
         >

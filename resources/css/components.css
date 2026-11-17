@@ -397,6 +397,7 @@
    8. KOMPONEN FOTO (<x-foto> & Fallback Gradient + Titik)
    ========================================================================== */
 .foto-wadah {
+    display: block;
     position: relative;
     width: 100%;
     height: 100%;

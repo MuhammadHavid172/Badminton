@@ -123,7 +123,7 @@
             <div id="langkah-deretan" class="scroll-kartu-deretan" tabindex="0" aria-label="Daftar lima langkah booking">
                 {{-- 01 Lihat Jadwal --}}
                 <x-kartu class="kartu-langkah">
-                    <x-foto nama="langkah-1.jpg" alt="Langkah 1 Lihat Jadwal Lapangan" :width="900" :height="1200" class="langkah-foto" />
+                    <x-foto nama="langkah-1.jpg" alt="Langkah 1 Lihat Jadwal Lapangan" :width="900" :height="1200" :lazy="false" class="langkah-foto" />
                     <div class="langkah-angka">01</div>
                     <h3 class="langkah-judul">Lihat jadwal</h3>
                     <p>Pilih hari, lalu lihat lapangan dan sesi yang masih kosong.</p>
@@ -131,7 +131,7 @@
 
                 {{-- 02 Pilih Harian atau Bulanan --}}
                 <x-kartu class="kartu-langkah">
-                    <x-foto nama="langkah-2.jpg" alt="Langkah 2 Pilih Paket Harian atau Bulanan" :width="900" :height="1200" class="langkah-foto" />
+                    <x-foto nama="langkah-2.jpg" alt="Langkah 2 Pilih Paket Harian atau Bulanan" :width="900" :height="1200" :lazy="false" class="langkah-foto" />
                     <div class="langkah-angka">02</div>
                     <h3 class="langkah-judul">Pilih Harian atau Bulanan</h3>
                     <p>Harian untuk satu kali main. Bulanan untuk 4 pertemuan mingguan di lapangan, sesi, dan hari yang sama.</p>
@@ -139,7 +139,7 @@
 
                 {{-- 03 Bayar --}}
                 <x-kartu class="kartu-langkah">
-                    <x-foto nama="langkah-3.jpg" alt="Langkah 3 Konfirmasi dan Bayar" :width="900" :height="1200" class="langkah-foto" />
+                    <x-foto nama="langkah-3.jpg" alt="Langkah 3 Konfirmasi dan Bayar" :width="900" :height="1200" :lazy="false" class="langkah-foto" />
                     <div class="langkah-angka">03</div>
                     <h3 class="langkah-judul">Bayar</h3>
                     <p>Slot ditahan selama {{ config('gor.hold_minutes') }} menit. Lewat dari itu, otomatis dilepas.</p>
@@ -147,7 +147,7 @@
 
                 {{-- 04 Main --}}
                 <x-kartu class="kartu-langkah">
-                    <x-foto nama="langkah-4.jpg" alt="Langkah 4 Tunjukkan Kode dan Main" :width="900" :height="1200" class="langkah-foto" />
+                    <x-foto nama="langkah-4.jpg" alt="Langkah 4 Tunjukkan Kode dan Main" :width="900" :height="1200" :lazy="false" class="langkah-foto" />
                     <div class="langkah-angka">04</div>
                     <h3 class="langkah-judul">Main</h3>
                     <p>Tunjukkan kode booking ke admin di lapangan.</p>
@@ -155,7 +155,7 @@
 
                 {{-- 05 Lanjutkan --}}
                 <x-kartu class="kartu-langkah">
-                    <x-foto nama="langkah-5.jpg" alt="Langkah 5 Perpanjang Jadwal Bulanan" :width="900" :height="1200" class="langkah-foto" />
+                    <x-foto nama="langkah-5.jpg" alt="Langkah 5 Perpanjang Jadwal Bulanan" :width="900" :height="1200" :lazy="false" class="langkah-foto" />
                     <div class="langkah-angka">05</div>
                     <h3 class="langkah-judul">Lanjutkan</h3>
                     <p>Jatah Bulanan tinggal 1 pertemuan? Perpanjang sebelum slotnya diambil orang lain. Siapa cepat dia dapat.</p>
@@ -169,11 +169,11 @@
      SECTION E: PILIH LAPANGAN
      ========================================================================== --}}
 <section class="pilih-lapangan-section reveal" aria-labelledby="judul-pilih-lapangan">
-    <x-foto nama="lapangan-besar.jpg" alt="Pilihan Lapangan Badminton {{ config('gor.name') }}" :width="2400" :height="1400" class="hero-bg-media" />
+    <x-foto nama="lapangan-besar.jpg" alt="Pilihan Lapangan Badminton {{ config('gor.name') }}" :width="2400" :height="1400" :lazy="false" class="hero-bg-media" />
     <div class="scrim-penuh" aria-hidden="true"></div>
     <div class="pola-titik" style="position: absolute; inset: 0; opacity: 0.35; pointer-events: none;" aria-hidden="true"></div>
 
-    <div class="kontainer" style="position: relative; z-index: 2;">
+    <div class="kontainer" style="position: relative; z-index: 3;">
         <x-penanda teks="PILIH LAPANGANMU" />
 
         <h2 id="judul-pilih-lapangan" class="pilih-lapangan-judul">
@@ -210,7 +210,7 @@
                     @for ($n = 1; $n <= 3; $n++)
                         @if (file_exists(public_path("images/lapangan-{$n}.jpg")))
                             <div class="lapangan-pratinjau-kotak">
-                                <x-foto nama="lapangan-{{ $n }}.jpg" alt="Pratinjau Lapangan {{ $n }}" :width="800" :height="600" />
+                                <x-foto nama="lapangan-{{ $n }}.jpg" alt="Pratinjau Lapangan {{ $n }}" :width="800" :height="600" :lazy="false" />
                             </div>
                         @endif
                     @endfor
@@ -371,11 +371,11 @@
      SECTION H: PENUTUP BESAR
      ========================================================================== --}}
 <section class="penutup-section reveal" aria-labelledby="judul-penutup">
-    <x-foto nama="cta.jpg" alt="Suasana Lapangan Badminton {{ config('gor.name') }}" :width="2400" :height="1200" class="hero-bg-media" />
+    <x-foto nama="cta.jpg" alt="Suasana Lapangan Badminton {{ config('gor.name') }}" :width="2400" :height="1200" :lazy="false" class="hero-bg-media" />
     <div class="scrim-penuh" aria-hidden="true"></div>
     <div class="pola-titik" style="position: absolute; inset: 0; opacity: 0.35; pointer-events: none;" aria-hidden="true"></div>
 
-    <div class="kontainer" style="position: relative; z-index: 2; text-align: center;">
+    <div class="kontainer" style="position: relative; z-index: 3; text-align: center;">
         <h2 id="judul-penutup" class="penutup-judul">
             Siap main?
         </h2>
