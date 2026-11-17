@@ -13,8 +13,6 @@
 
     <div class="kontainer hero-content">
         <div class="hero-main-block">
-            <x-penanda teks="SISTEM BOOKING GOR" />
-            
             {{-- Satu h1 tunggal di halaman --}}
             <h1 class="hero-judul">
                 <span>Saatnya</span>

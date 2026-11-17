@@ -693,7 +693,7 @@ details[open] .faq-icon {
     align-items: baseline;
     gap: clamp(1rem, 2.8vw, 3.2rem);
     width: 100%;
-    margin-top: var(--spasi-3);
+    margin-top: 0;
     margin-bottom: 0;
 }
 
