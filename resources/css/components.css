@@ -1935,6 +1935,20 @@ details[open] .faq-icon {
     border-color: var(--lime);
 }
 
+/* Netralkan autofill browser agar menyatu dengan latar belakang gelap */
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:active,
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--putih) !important;
+    transition: background-color 999999s ease-in-out 0s !important;
+    caret-color: var(--lime) !important;
+}
+
 .form-input.has-error {
     border-color: var(--merah);
 }

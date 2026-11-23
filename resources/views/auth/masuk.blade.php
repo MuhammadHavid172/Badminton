@@ -22,7 +22,7 @@
 
             {{-- Kolom Kanan: Form Murni tanpa kartu/kaca --}}
             <div class="auth-right">
-                <form action="{{ route('masuk.post') }}" method="POST" novalidate>
+                <form action="{{ route('masuk.post') }}" method="POST" novalidate autocomplete="off">
                     @csrf
 
                     <div class="form-group">
@@ -34,7 +34,7 @@
                             value="{{ old('login') }}"
                             class="form-input {{ $errors->has('login') ? 'has-error' : '' }}"
                             placeholder="Nomor HP (08xxx) atau email kamu"
-                            autocomplete="username"
+                            autocomplete="off"
                             required
                             autofocus
                         >
@@ -51,7 +51,7 @@
                             name="password"
                             class="form-input {{ $errors->has('password') ? 'has-error' : '' }}"
                             placeholder="Masukkan password akunmu"
-                            autocomplete="current-password"
+                            autocomplete="new-password"
                             required
                         >
                         @error('password')
@@ -79,6 +79,22 @@
                         <a href="{{ route('daftar') }}" class="form-footer-link">Daftar sekarang</a>
                     </div>
                 </form>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        @if (!old('login'))
+                            var loginEl = document.getElementById('login');
+                            var pwdEl = document.getElementById('password');
+                            function clearAutofill() {
+                                if (loginEl) loginEl.value = '';
+                                if (pwdEl) pwdEl.value = '';
+                            }
+                            clearAutofill();
+                            setTimeout(clearAutofill, 50);
+                            setTimeout(clearAutofill, 200);
+                        @endif
+                    });
+                </script>
             </div>
         </div>
     </div>
