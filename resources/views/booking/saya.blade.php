@@ -22,7 +22,47 @@
 
     @php
         $nowJayapura = \Carbon\Carbon::now('Asia/Jayapura');
+
+        // Cari apakah ada sewa bulanan yang butuh perpanjangan mendesak untuk banner tipis
+        $urgentNoticeBooking = null;
+        $urgentNoticeType = null;
+        foreach ($akanDatang as $b) {
+            if ($b->type === \App\Enums\BookingType::PACKAGE) {
+                $lc = new \App\Services\PackageLifecycle($b);
+                $st = $lc->state($nowJayapura);
+                $cs = $lc->continuationStatus($nowJayapura);
+                if ($cs === 'belum_lanjut' && in_array($st, ['hampir_habis', 'terakhir_hari_ini'])) {
+                    $urgentNoticeBooking = $b;
+                    $urgentNoticeType = $st;
+                    break;
+                }
+            }
+        }
     @endphp
+
+    {{-- Banner Tipis (Dapat Ditutup) untuk Pemilik Bulanan yang Hampir Habis atau Terakhir Hari Ini --}}
+    @if ($urgentNoticeBooking)
+        <div id="dismissable-renewal-banner" class="alert-box alert-box-warning" style="margin-bottom: var(--spasi-6); display: flex; justify-content: space-between; align-items: center; gap: var(--spasi-3); flex-wrap: wrap;" role="alert">
+            <div>
+                <strong>
+                    {{ $urgentNoticeType === 'terakhir_hari_ini' ? 'Hari Ini Pertemuan Terakhir!' : 'Jatah Main Bulanan Hampir Habis!' }}
+                </strong>
+                Booking {{ $urgentNoticeBooking->code }} tersisa {{ (new \App\Services\PackageLifecycle($urgentNoticeBooking))->remainingMeetings($nowJayapura) }} pertemuan.
+                Perpanjang sekarang sebelum slot diambil orang lain ya.
+            </div>
+            <div style="display: flex; align-items: center; gap: var(--spasi-2); flex-shrink: 0;">
+                <form action="{{ route('booking.perpanjang', $urgentNoticeBooking->code) }}" method="POST" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="tombol tombol-solid" style="min-height: 36px; padding: 4px 14px; font-size: 0.8125rem;">
+                        Perpanjang &rarr;
+                    </button>
+                </form>
+                <button type="button" onclick="document.getElementById('dismissable-renewal-banner').style.display='none'" class="tombol tombol-sekunder" style="min-height: 36px; padding: 4px 10px; font-size: 0.8125rem;" aria-label="Tutup pemberitahuan">
+                    &times;
+                </button>
+            </div>
+        </div>
+    @endif
 
     {{-- BAGIAN 1: MENUNGGU BAYAR --}}
     <section class="booking-section-group" aria-labelledby="heading-menunggu-bayar">
@@ -82,8 +122,8 @@
                                 <span class="price-val">{{ rupiah($booking->total_price) }}</span>
                             </div>
 
-                            <a href="{{ route('booking.detail', $booking->code) }}" class="tombol tombol-solid" style="min-height: 40px; font-size: 0.875rem;">
-                                Selesaikan Bayar &rarr;
+                            <a href="{{ route('booking.bayar', $booking->code) }}" class="tombol tombol-solid" style="min-height: 40px; font-size: 0.875rem;">
+                                Bayar Sekarang &rarr;
                             </a>
                         </div>
                     </div>
@@ -108,6 +148,15 @@
         @else
             <div class="booking-rows-list">
                 @foreach ($akanDatang as $booking)
+                    @php
+                        $isBulanan = ($booking->type === \App\Enums\BookingType::PACKAGE);
+                        $lc = $isBulanan ? new \App\Services\PackageLifecycle($booking) : null;
+                        $remaining = $lc ? $lc->remainingMeetings($nowJayapura) : 0;
+                        $total = $lc ? $lc->totalMeetings() : 0;
+                        $completed = max(0, $total - $remaining);
+                        $state = $lc ? $lc->state($nowJayapura) : '';
+                        $contStatus = $lc ? $lc->continuationStatus($nowJayapura) : '';
+                    @endphp
                     <div class="booking-row-item">
                         <div class="booking-row-main">
                             <div class="booking-row-header">
@@ -116,7 +165,38 @@
                                 </span>
                                 <span class="booking-code-pill">{{ $booking->code }}</span>
                                 <span class="slip-status-badge slip-status-paid">Lunas</span>
+
+                                {{-- Chip State untuk Bulanan --}}
+                                @if ($isBulanan && $lc)
+                                    @if ($contStatus === 'sudah_lanjut')
+                                        <span class="chip-state chip-state-success">Sudah Lanjut</span>
+                                    @elseif ($contStatus === 'perpanjangan_menunggu_bayar')
+                                        <span class="chip-state chip-state-warning">Perpanjangan Menunggu Bayar</span>
+                                    @elseif ($state === 'terakhir_hari_ini')
+                                        <span class="chip-state chip-state-urgent">Terakhir Hari Ini</span>
+                                    @elseif ($state === 'hampir_habis')
+                                        <span class="chip-state chip-state-urgent">Hampir Habis</span>
+                                    @elseif ($state === 'selesai')
+                                        <span class="chip-state chip-state-dim">Selesai</span>
+                                    @else
+                                        <span class="chip-state chip-state-normal">Aktif</span>
+                                    @endif
+                                @endif
                             </div>
+
+                            {{-- Siklus Bulanan: Pertemuan X dari 4 & Batang Kemajuan Datar --}}
+                            @if ($isBulanan && $lc)
+                                <div style="margin-bottom: var(--spasi-3);">
+                                    <div style="font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; color: var(--teks-redup); margin-bottom: 4px;">
+                                        Pertemuan {{ min($completed + 1, $total) }} dari {{ $total }}
+                                    </div>
+                                    <div class="package-progress-bar-small">
+                                        @for ($i = 1; $i <= $total; $i++)
+                                            <div class="progress-box-small {{ $i <= $completed ? 'is-completed' : ($i === $completed + 1 ? 'is-current' : '') }}"></div>
+                                        @endfor
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="booking-row-details">
                                 <div class="booking-row-detail-item">
@@ -156,6 +236,15 @@
                                 <span class="detail-label">Biaya Sewa</span>
                                 <span class="price-val">{{ rupiah($booking->total_price) }}</span>
                             </div>
+
+                            @if ($isBulanan && $remaining <= \App\Models\Setting::getInt('renew_notice_remaining', 1) && $remaining >= 1 && $contStatus === 'belum_lanjut')
+                                <form action="{{ route('booking.perpanjang', $booking->code) }}" method="POST" style="margin: 0; width: 100%;">
+                                    @csrf
+                                    <button type="submit" class="tombol tombol-solid" style="min-height: 40px; font-size: 0.8125rem; width: 100%;">
+                                        Lanjutkan Sewa &rarr;
+                                    </button>
+                                </form>
+                            @endif
 
                             <a href="{{ route('booking.detail', $booking->code) }}" class="tombol tombol-outline" style="min-height: 40px; font-size: 0.875rem;">
                                 Lihat Tiket &rarr;

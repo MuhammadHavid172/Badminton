@@ -5,7 +5,7 @@
 @section('content')
 <div class="kontainer" style="padding-top: var(--spasi-8); padding-bottom: var(--spasi-16);">
     {{-- Navigasi Atas --}}
-    <div style="margin-bottom: var(--spasi-6); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spasi-3);">
+    <div style="margin-bottom: var(--spasi-6); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spasi-3);" class="no-print">
         <a href="{{ route('booking.saya') }}" class="link-kembali" style="display: inline-flex; align-items: center; gap: var(--spasi-2); font-family: var(--font-mono); font-size: 0.8125rem; text-transform: uppercase; color: var(--teks-redup); text-decoration: none;">
             &larr; Ke Booking Saya
         </a>
@@ -18,15 +18,21 @@
     </div>
 
     @if (session('status'))
-        <div class="alert-box alert-box-success" style="margin-bottom: var(--spasi-6);" role="alert">
+        <div class="alert-box alert-box-success no-print" style="margin-bottom: var(--spasi-6);" role="alert">
             {{ session('status') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert-box alert-box-error no-print" style="margin-bottom: var(--spasi-6);" role="alert">
+            {{ session('error') }}
         </div>
     @endif
 
     <div style="max-width: 720px; margin: 0 auto;">
         {{-- Hitung Mundur Waktu Tahan (Jika Pending Payment) --}}
         @if ($booking->status === \App\Enums\BookingStatus::PENDING_PAYMENT && $booking->expires_at)
-            <div class="countdown-card" id="countdown-wrapper" data-expires="{{ $booking->expires_at->toIso8601String() }}">
+            <div class="countdown-card no-print" id="countdown-wrapper" data-expires="{{ $booking->expires_at->toIso8601String() }}">
                 <div class="countdown-header">
                     <span class="countdown-title">WAKTU PEMBAYARAN TERSISA</span>
                     <span class="countdown-sub">Selesaikan pembayaran sebelum slot dibebaskan otomatis</span>
@@ -34,6 +40,79 @@
                 <div class="countdown-timer-display" id="countdown-display">
                     --:--
                 </div>
+            </div>
+        @endif
+
+        @php
+            $isPackagePaid = ($booking->type === \App\Enums\BookingType::PACKAGE && $booking->status === \App\Enums\BookingStatus::PAID);
+            $lifecycle = $isPackagePaid ? new \App\Services\PackageLifecycle($booking) : null;
+        @endphp
+
+        {{-- Siklus Paket Bulanan di UI --}}
+        @if ($lifecycle)
+            @php
+                $totalMeetings = $lifecycle->totalMeetings();
+                $remainingMeetings = $lifecycle->remainingMeetings();
+                $completedMeetings = max(0, $totalMeetings - $remainingMeetings);
+                $state = $lifecycle->state();
+                $continuationStatus = $lifecycle->continuationStatus();
+            @endphp
+            <div class="booking-section-box no-print" style="margin-bottom: var(--spasi-6);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spasi-3); flex-wrap: wrap; gap: var(--spasi-2);">
+                    <div style="font-family: var(--font-judul); font-size: 1.125rem; font-weight: 700; text-transform: uppercase;">
+                        Pertemuan {{ min($completedMeetings + 1, $totalMeetings) }} dari {{ $totalMeetings }}
+                    </div>
+
+                    {{-- Chip State --}}
+                    <div>
+                        @if ($continuationStatus === 'sudah_lanjut')
+                            <span class="chip-state chip-state-success">Sudah Lanjut</span>
+                        @elseif ($continuationStatus === 'perpanjangan_menunggu_bayar')
+                            <span class="chip-state chip-state-warning">Perpanjangan Menunggu Bayar</span>
+                        @elseif ($state === 'terakhir_hari_ini')
+                            <span class="chip-state chip-state-urgent">Terakhir Hari Ini</span>
+                        @elseif ($state === 'hampir_habis')
+                            <span class="chip-state chip-state-urgent">Hampir Habis</span>
+                        @elseif ($state === 'selesai')
+                            <span class="chip-state chip-state-dim">Selesai</span>
+                        @else
+                            <span class="chip-state chip-state-normal">Aktif</span>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Batang Kemajuan 4 Kotak Datar --}}
+                <div class="package-progress-bar" role="progressbar" aria-valuenow="{{ $completedMeetings }}" aria-valuemin="0" aria-valuemax="{{ $totalMeetings }}" aria-label="Kemajuan Pertemuan Bulanan">
+                    @for ($i = 1; $i <= $totalMeetings; $i++)
+                        <div class="progress-box {{ $i <= $completedMeetings ? 'is-completed' : ($i === $completedMeetings + 1 ? 'is-current' : '') }}">
+                            <span class="progress-box-num">{{ $i }}</span>
+                            <span class="progress-box-label">
+                                {{ $i <= $completedMeetings ? 'Selesai' : ($i === $completedMeetings + 1 ? 'Berikutnya' : 'Mendatang') }}
+                            </span>
+                        </div>
+                    @endfor
+                </div>
+
+                {{-- Tombol Perpanjangan (Jika Tersisa <= 1 sesi dan belum diperpanjang) --}}
+                @if ($remainingMeetings <= \App\Models\Setting::getInt('renew_notice_remaining', 1) && $remainingMeetings >= 1 && $continuationStatus === 'belum_lanjut' && $booking->user_id === auth()->id())
+                    <div style="margin-top: var(--spasi-4); padding-top: var(--spasi-4); border-top: 1px dashed var(--garis); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spasi-3);">
+                        <div>
+                            <div style="font-weight: 700; color: var(--putih); font-size: 0.9375rem;">
+                                Ingin lanjut main untuk 4 minggu ke depan?
+                            </div>
+                            <div style="font-size: 0.8125rem; color: var(--teks-redup);">
+                                Siapa cepat dia dapat. Slot lanjutan tidak dikunci otomatis.
+                            </div>
+                        </div>
+
+                        <form action="{{ route('booking.perpanjang', $booking->code) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="tombol tombol-solid">
+                                Lanjutkan Sewa Bulanan &rarr;
+                            </button>
+                        </form>
+                    </div>
+                @endif
             </div>
         @endif
 
@@ -81,6 +160,19 @@
                     </span>
                 </div>
 
+                {{-- Waktu Pembayaran (Jika Sudah Lunas) --}}
+                @php
+                    $paidPayment = $booking->payments->where('status', \App\Enums\PaymentStatus::PAID)->first();
+                @endphp
+                @if ($paidPayment && $paidPayment->paid_at)
+                    <div class="slip-tiket-row">
+                        <span class="slip-tiket-label">Waktu Bayar</span>
+                        <span class="slip-tiket-val">
+                            {{ tanggal_indonesia($paidPayment->paid_at, true, true) }} WIT
+                        </span>
+                    </div>
+                @endif
+
                 @if ($booking->notes)
                     <div class="slip-tiket-row">
                         <span class="slip-tiket-label">Catatan</span>
@@ -112,6 +204,27 @@
                         @endforeach
                     </div>
                 </div>
+
+                {{-- Riwayat Percobaan Pembayaran --}}
+                @if ($booking->payments->isNotEmpty())
+                    <div style="margin-top: var(--spasi-3); border-top: 1px dashed #C8C8C0; padding-top: var(--spasi-3);">
+                        <span class="slip-tiket-label" style="display: block; margin-bottom: var(--spasi-2);">
+                            Riwayat Transaksi Pembayaran
+                        </span>
+
+                        <div style="display: flex; flex-direction: column; gap: 6px; font-family: var(--font-mono); font-size: 0.8125rem;">
+                            @foreach ($booking->payments as $p)
+                                <div style="display: flex; justify-content: space-between; align-items: baseline; color: #333;">
+                                    <span>
+                                        {{ $p->reference }} &middot;
+                                        <strong style="text-transform: uppercase;">{{ $p->status->label() }}</strong>
+                                    </span>
+                                    <span>{{ rupiah($p->amount) }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <div class="slip-tiket-footer">
@@ -123,30 +236,26 @@
         </div>
 
         {{-- Aksi Tambahan di Bawah Tiket --}}
-        <div style="margin-top: var(--spasi-6); display: flex; flex-direction: column; gap: var(--spasi-3);">
-            {{-- Tombol Batalkan Booking (Hanya untuk pemilik dan pending payment) --}}
+        <div class="no-print" style="margin-top: var(--spasi-6); display: flex; flex-direction: column; gap: var(--spasi-3);">
+            {{-- Tombol Bayar Sekarang (Jika Pending Payment dan pemilik) --}}
             @if ($booking->status === \App\Enums\BookingStatus::PENDING_PAYMENT && $booking->user_id === auth()->id())
+                <a href="{{ route('booking.bayar', $booking->code) }}" class="tombol tombol-solid" style="width: 100%; min-height: 52px; font-size: 1rem; text-align: center;">
+                    Lanjut ke Pembayaran &rarr;
+                </a>
+
                 <form action="{{ route('booking.batal', $booking->code) }}" method="POST" onsubmit="return confirm('Apakah kamu yakin ingin membatalkan booking ini? Slot akan langsung dibebaskan.');">
                     @csrf
-                    <button type="submit" class="tombol tombol-sekunder" style="width: 100%; min-height: 48px; color: var(--merah); border-color: rgba(255, 90, 77, 0.4);">
+                    <button type="submit" class="tombol tombol-sekunder" style="width: 100%; min-height: 44px; color: var(--merah); border-color: rgba(255, 90, 77, 0.4);">
                         Batalkan Booking
                     </button>
                 </form>
             @endif
 
-            {{-- Tombol Simulasi Lunas Sementara (Khusus Local Environment - Fase 4) --}}
-            @if (app()->environment('local') && $booking->status === \App\Enums\BookingStatus::PENDING_PAYMENT)
-                <div style="background-color: var(--abu-gelap); border: 1px dashed var(--garis); padding: var(--spasi-4); border-radius: var(--radius-sm); text-align: center;">
-                    <div style="font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; color: var(--lime); margin-bottom: var(--spasi-2);">
-                        Mode Pengujian Lokal (Fase 4)
-                    </div>
-                    <form action="{{ route('booking.simulasi-lunas', $booking->code) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="tombol tombol-outline" style="width: 100%; min-height: 44px;">
-                            Simulasi Lunas (Tes)
-                        </button>
-                    </form>
-                </div>
+            {{-- Tombol Cetak Tiket (Jika Paid) --}}
+            @if ($booking->status === \App\Enums\BookingStatus::PAID)
+                <button type="button" onclick="window.print()" class="tombol tombol-solid" style="width: 100%; min-height: 48px;">
+                    Cetak Tiket / Simpan PDF
+                </button>
             @endif
 
             <div style="display: flex; gap: var(--spasi-3); justify-content: center; margin-top: var(--spasi-2);">
@@ -178,7 +287,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (diff <= 0) {
             display.textContent = '00:00';
             display.classList.add('is-expired');
-            // Muat ulang otomatis saat waktu tahan habis
             setTimeout(function () {
                 window.location.reload();
             }, 1000);

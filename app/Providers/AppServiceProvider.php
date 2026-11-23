@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Contracts\PaymentGateway;
+use App\Services\Payment\SimulatedGateway;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +14,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(PaymentGateway::class, function () {
+            $driver = config('gor.payment_driver', 'simulated');
+
+            return match ($driver) {
+                default => app(SimulatedGateway::class),
+            };
+        });
     }
 
     /**
@@ -19,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Peringatan jika di lingkungan production tetapi driver pembayaran masih simulated
+        if (app()->environment('production') && config('gor.payment_driver') === 'simulated') {
+            Log::warning('PERINGATAN: Gateway pembayaran berjalan dalam mode simulasi (simulated) di lingkungan produksi!');
+        }
     }
 }
