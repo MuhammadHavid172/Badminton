@@ -139,7 +139,7 @@
                                     id="password"
                                     class="form-input @error('password') form-input-error @enderror"
                                     required
-                                    placeholder="Buat password untuk login nanti"
+                                    placeholder="Minimal 8 karakter"
                                 >
                                 @error('password')
                                     <span class="form-error-msg">{{ $message }}</span>
@@ -154,7 +154,7 @@
                                     id="team_name"
                                     class="form-input @error('team_name') form-input-error @enderror"
                                     value="{{ old('team_name') }}"
-                                    placeholder="Nama PB atau tim (opsional)"
+                                    placeholder="Nama PB / tim"
                                 >
                                 @error('team_name')
                                     <span class="form-error-msg">{{ $message }}</span>
@@ -169,7 +169,7 @@
                                     id="email"
                                     class="form-input @error('email') form-input-error @enderror"
                                     value="{{ old('email') }}"
-                                    placeholder="alamat@email.com (opsional)"
+                                    placeholder="nama@email.com"
                                 >
                                 @error('email')
                                     <span class="form-error-msg">{{ $message }}</span>
@@ -307,7 +307,7 @@
                         id="notes"
                         rows="2"
                         class="form-input"
-                        placeholder="Tulis catatan jika ada permintaan khusus (opsional)"
+                        placeholder="Catatan tambahan..."
                     >{{ old('notes') }}</textarea>
                 </div>
 

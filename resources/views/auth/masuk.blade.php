@@ -33,7 +33,7 @@
                             name="login"
                             value="{{ old('login') }}"
                             class="form-input {{ $errors->has('login') ? 'has-error' : '' }}"
-                            placeholder="Nomor HP (08xxx) atau email kamu"
+                            placeholder="No. HP / Email"
                             autocomplete="off"
                             required
                             autofocus
@@ -50,7 +50,7 @@
                             id="password"
                             name="password"
                             class="form-input {{ $errors->has('password') ? 'has-error' : '' }}"
-                            placeholder="Masukkan password akunmu"
+                            placeholder="Password akun"
                             autocomplete="new-password"
                             required
                         >

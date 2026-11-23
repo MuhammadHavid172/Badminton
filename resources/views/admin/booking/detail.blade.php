@@ -293,7 +293,7 @@
                            id="admin_cancel_reason"
                            name="reason"
                            required
-                           placeholder="Tuliskan alasan pembatalan booking..."
+                           placeholder="Alasan pembatalan..."
                            class="form-input"
                            style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                            value="{{ old('reason') }}">
@@ -309,7 +309,7 @@
                     <input type="text"
                            id="admin_refund_note"
                            name="refund_note"
-                           placeholder="Catatan pengembalian dana atau refund (opsional)"
+                           placeholder="Catatan refund..."
                            class="form-input"
                            style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                            value="{{ old('refund_note') }}">
@@ -331,7 +331,7 @@
                                id="admin_password_confirm"
                                name="password"
                                required
-                               placeholder="Masukkan password admin kamu"
+                               placeholder="Password admin"
                                class="form-input"
                                style="width: 100%; min-height: 48px; background-color: #1A1A17;">
                         @error('password')

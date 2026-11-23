@@ -70,7 +70,7 @@
                             name="team_name"
                             value="{{ old('team_name') }}"
                             class="form-input {{ $errors->has('team_name') ? 'has-error' : '' }}"
-                            placeholder="Nama PB atau tim (opsional)"
+                            placeholder="Nama PB / tim"
                         >
                         @error('team_name')
                             <span class="form-error" role="alert">{{ $message }}</span>
@@ -87,7 +87,7 @@
                             name="email"
                             value="{{ old('email') }}"
                             class="form-input {{ $errors->has('email') ? 'has-error' : '' }}"
-                            placeholder="alamat@email.com (opsional)"
+                            placeholder="nama@email.com"
                             autocomplete="email"
                         >
                         @error('email')
@@ -118,7 +118,7 @@
                             id="password_confirmation"
                             name="password_confirmation"
                             class="form-input"
-                            placeholder="Ulangi password di atas"
+                            placeholder="Ulangi password"
                             autocomplete="new-password"
                             required
                         >

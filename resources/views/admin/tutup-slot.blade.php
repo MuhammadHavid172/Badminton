@@ -101,7 +101,7 @@
                        id="close_reason"
                        name="reason"
                        required
-                       placeholder="Tuliskan alasan penutupan slot lapangan..."
+                       placeholder="Alasan penutupan..."
                        class="form-input"
                        style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                        value="{{ old('reason') }}">

@@ -203,7 +203,7 @@
                             <input type="text"
                                    id="team_name_baru"
                                    name="team_name_baru"
-                                   placeholder="Nama PB atau tim (opsional)"
+                                   placeholder="Nama PB / tim"
                                    class="form-input"
                                    style="width: 100%; min-height: 48px; background-color: #151512;"
                                    value="{{ old('team_name_baru') }}">
@@ -277,7 +277,7 @@
                     <input type="text"
                            id="booking_notes"
                            name="notes"
-                           placeholder="Catatan tambahan booking (opsional)"
+                           placeholder="Catatan khusus..."
                            class="form-input"
                            style="width: 100%; min-height: 48px; background-color: #151512;"
                            value="{{ old('notes') }}">
