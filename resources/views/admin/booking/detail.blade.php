@@ -293,7 +293,7 @@
                            id="admin_cancel_reason"
                            name="reason"
                            required
-                           placeholder="Contoh: Perbaikan lapangan mendadak, permintaan langsung pemesan..."
+                           placeholder="Tuliskan alasan pembatalan booking..."
                            class="form-input"
                            style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                            value="{{ old('reason') }}">
@@ -309,7 +309,7 @@
                     <input type="text"
                            id="admin_refund_note"
                            name="refund_note"
-                           placeholder="Contoh: Dana tunai Rp 200.000 sudah dikembalikan di tempat"
+                           placeholder="Catatan pengembalian dana atau refund (opsional)"
                            class="form-input"
                            style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                            value="{{ old('refund_note') }}">

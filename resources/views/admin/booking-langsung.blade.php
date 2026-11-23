@@ -171,7 +171,7 @@
                             <input type="text"
                                    id="nama_baru"
                                    name="nama_baru"
-                                   placeholder="Contoh: Budi Santoso"
+                                   placeholder="Masukkan nama lengkap"
                                    class="form-input"
                                    style="width: 100%; min-height: 48px; background-color: #151512;"
                                    value="{{ old('nama_baru') }}">
@@ -187,7 +187,7 @@
                             <input type="text"
                                    id="hp_baru"
                                    name="hp_baru"
-                                   placeholder="Contoh: 081234567890"
+                                   placeholder="08xxxxxxxxxx"
                                    class="form-input"
                                    style="width: 100%; min-height: 48px; background-color: #151512;"
                                    value="{{ old('hp_baru') }}">
@@ -203,7 +203,7 @@
                             <input type="text"
                                    id="team_name_baru"
                                    name="team_name_baru"
-                                   placeholder="Contoh: PB Rajawali"
+                                   placeholder="Nama PB atau tim (opsional)"
                                    class="form-input"
                                    style="width: 100%; min-height: 48px; background-color: #151512;"
                                    value="{{ old('team_name_baru') }}">
@@ -277,7 +277,7 @@
                     <input type="text"
                            id="booking_notes"
                            name="notes"
-                           placeholder="Contoh: Titipan raket, rombongan kantor, DP..."
+                           placeholder="Catatan tambahan booking (opsional)"
                            class="form-input"
                            style="width: 100%; min-height: 48px; background-color: #151512;"
                            value="{{ old('notes') }}">

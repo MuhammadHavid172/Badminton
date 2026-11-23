@@ -33,7 +33,7 @@
                             name="name"
                             value="{{ old('name') }}"
                             class="form-input {{ $errors->has('name') ? 'has-error' : '' }}"
-                            placeholder="Contoh: Budi Santoso"
+                            placeholder="Masukkan nama lengkap"
                             autocomplete="name"
                             required
                             autofocus
@@ -51,7 +51,7 @@
                             name="phone"
                             value="{{ old('phone') }}"
                             class="form-input {{ $errors->has('phone') ? 'has-error' : '' }}"
-                            placeholder="Contoh: 081234567890"
+                            placeholder="08xxxxxxxxxx"
                             autocomplete="tel"
                             required
                         >
@@ -70,7 +70,7 @@
                             name="team_name"
                             value="{{ old('team_name') }}"
                             class="form-input {{ $errors->has('team_name') ? 'has-error' : '' }}"
-                            placeholder="Contoh: PB Rajawali"
+                            placeholder="Nama PB atau tim (opsional)"
                         >
                         @error('team_name')
                             <span class="form-error" role="alert">{{ $message }}</span>
@@ -87,7 +87,7 @@
                             name="email"
                             value="{{ old('email') }}"
                             class="form-input {{ $errors->has('email') ? 'has-error' : '' }}"
-                            placeholder="Contoh: budi@contoh.test"
+                            placeholder="alamat@email.com (opsional)"
                             autocomplete="email"
                         >
                         @error('email')

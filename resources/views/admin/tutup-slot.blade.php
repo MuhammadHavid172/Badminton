@@ -101,7 +101,7 @@
                        id="close_reason"
                        name="reason"
                        required
-                       placeholder="Contoh: Perbaikan lampu lapangan 1, turnamen internal warga..."
+                       placeholder="Tuliskan alasan penutupan slot lapangan..."
                        class="form-input"
                        style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                        value="{{ old('reason') }}">

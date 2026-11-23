@@ -33,7 +33,7 @@
                             name="login"
                             value="{{ old('login') }}"
                             class="form-input {{ $errors->has('login') ? 'has-error' : '' }}"
-                            placeholder="Contoh: 08123456789 atau email@kamu.com"
+                            placeholder="Nomor HP (08xxx) atau email kamu"
                             autocomplete="username"
                             required
                             autofocus

@@ -266,7 +266,7 @@
                                id="new_name"
                                name="name"
                                required
-                               placeholder="Nama lengkap"
+                               placeholder="Masukkan nama lengkap"
                                class="form-input"
                                style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                                value="{{ old('name') }}">
@@ -293,7 +293,7 @@
                         <input type="email"
                                id="new_email"
                                name="email"
-                               placeholder="user@example.com"
+                               placeholder="alamat@email.com (opsional)"
                                class="form-input"
                                style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                                value="{{ old('email') }}">
@@ -306,7 +306,7 @@
                         <input type="text"
                                id="new_team_name"
                                name="team_name"
-                               placeholder="Contoh: PB Rajawali"
+                               placeholder="Nama PB atau tim (opsional)"
                                class="form-input"
                                style="width: 100%; min-height: 48px; background-color: #1A1A17;"
                                value="{{ old('team_name') }}">

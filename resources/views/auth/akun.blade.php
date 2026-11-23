@@ -83,7 +83,7 @@
                             name="team_name"
                             value="{{ old('team_name', $user->team_name) }}"
                             class="form-input {{ $errors->has('team_name') ? 'has-error' : '' }}"
-                            placeholder="Contoh: PB Rajawali"
+                            placeholder="Nama PB atau tim (opsional)"
                         >
                         @error('team_name')
                             <span class="form-error">{{ $message }}</span>
@@ -100,7 +100,7 @@
                             name="email"
                             value="{{ old('email', $user->email) }}"
                             class="form-input {{ $errors->has('email') ? 'has-error' : '' }}"
-                            placeholder="email@kamu.com"
+                            placeholder="alamat@email.com (opsional)"
                         >
                         @error('email')
                             <span class="form-error">{{ $message }}</span>

@@ -108,7 +108,7 @@
                                     class="form-input @error('name') form-input-error @enderror"
                                     value="{{ old('name') }}"
                                     required
-                                    placeholder="Contoh: Budi Santoso"
+                                    placeholder="Masukkan nama lengkap"
                                 >
                                 @error('name')
                                     <span class="form-error-msg">{{ $message }}</span>
@@ -154,7 +154,7 @@
                                     id="team_name"
                                     class="form-input @error('team_name') form-input-error @enderror"
                                     value="{{ old('team_name') }}"
-                                    placeholder="Contoh: PB Rajawali"
+                                    placeholder="Nama PB atau tim (opsional)"
                                 >
                                 @error('team_name')
                                     <span class="form-error-msg">{{ $message }}</span>
@@ -169,7 +169,7 @@
                                     id="email"
                                     class="form-input @error('email') form-input-error @enderror"
                                     value="{{ old('email') }}"
-                                    placeholder="alamat@email.com"
+                                    placeholder="alamat@email.com (opsional)"
                                 >
                                 @error('email')
                                     <span class="form-error-msg">{{ $message }}</span>
@@ -307,7 +307,7 @@
                         id="notes"
                         rows="2"
                         class="form-input"
-                        placeholder="Contoh: Butuh net tambahan jika tersedia"
+                        placeholder="Tulis catatan jika ada permintaan khusus (opsional)"
                     >{{ old('notes') }}</textarea>
                 </div>
 
