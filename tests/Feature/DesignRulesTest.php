@@ -17,7 +17,7 @@ class DesignRulesTest extends TestCase
     ];
 
     /**
-     * Frasa terlarang (klaim kosong dan kata formal).
+     * Frasa terlarang (klaim kosong, kata formal, dan istilah kategori keliru).
      */
     protected array $forbiddenPhrases = [
         'terpercaya',
@@ -26,6 +26,9 @@ class DesignRulesTest extends TestCase
         'transparan tanpa',
         'instan',
         'standar turnamen',
+        'Sekali main',
+        'Paket bulanan',
+        'penjaga',
     ];
 
     /**

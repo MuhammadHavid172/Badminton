@@ -126,4 +126,54 @@ document.addEventListener('DOMContentLoaded', () => {
             reveals.forEach((el) => observer.observe(el));
         }
     }
+
+    /* ======================================================================
+       (e) Dropdown Menu Pengguna (Aksesibel Keyboard & Escape)
+       ====================================================================== */
+    const userToggle = document.getElementById('user-menu-toggle');
+    const userDropdown = document.getElementById('user-dropdown-menu');
+
+    if (userToggle && userDropdown) {
+        const toggleDropdown = () => {
+            const isOpen = userDropdown.classList.contains('is-open');
+            if (isOpen) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
+        };
+
+        const openDropdown = () => {
+            userDropdown.classList.add('is-open');
+            userToggle.setAttribute('aria-expanded', 'true');
+            const firstItem = userDropdown.querySelector('a, button');
+            if (firstItem) firstItem.focus();
+        };
+
+        const closeDropdown = () => {
+            userDropdown.classList.remove('is-open');
+            userToggle.setAttribute('aria-expanded', 'false');
+            userToggle.focus();
+        };
+
+        userToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdown();
+        });
+
+        // Tutup saat klik di luar
+        document.addEventListener('click', (e) => {
+            if (!userToggle.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('is-open');
+                userToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Tutup dengan Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && userDropdown.classList.contains('is-open')) {
+                closeDropdown();
+            }
+        });
+    }
 });

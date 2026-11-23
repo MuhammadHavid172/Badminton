@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Jalankan pembersihan hold booking kedaluwarsa setiap menit
+        $schedule->command('bookings:expire')->everyMinute();
     }
 
     /**

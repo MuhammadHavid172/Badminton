@@ -92,3 +92,25 @@ Seluruh komponen dan teks dalam proyek ini wajib mematuhi aturan berikut:
 10. **Data Nyata & Transparan**: Setiap klaim bersumber dari konfigurasi (`config/gor.php`) atau mekanisme booking nyata (contoh waktu tahan slot `hold_minutes`). Konten contoh wajib diberi label "Contoh".
 11. **Teks Rata Kiri Default**: Mayoritas teks rata kiri untuk keterbacaan tinggi.
 12. **Skala Spasi Basis 8px**: Konsistensi jarak menggunakan kelipatan 8px (8, 16, 24, 32, 40, 48, 64, 80, 96, 128, 160px).
+
+---
+
+## 6. Aturan Desain Tambahan (Sistem Booking & Admin)
+
+Aturan tambahan berikut mengikat seluruh fase sistem booking, jadwal, dan dashboard pengelola:
+
+1. **Tema Gelap & Token Warna**: Tetap konsisten pada tema gelap dengan aksen limau (`#DAFF04`) dari `tokens.css`. Dilarang menambah warna aksen baru.
+2. **Visualisasi Status Slot**:
+   - `kosong`: Latar limau (`#DAFF04`), teks hitam tebal.
+   - `menunggu_bayar`: Kuning-oranye (`#FFB020`) dengan pola titik halus (*subtle dot pattern*).
+   - `terisi`: Gelap (`#2A2A25`), teks putih. Menampilkan nama pemesan/PB dan badge kategori. Nomor HP hanya terlihat oleh admin dan owner.
+   - `ditutup`: Abu-abu (`#5A5A52`) dengan pola garis diagonal tipis. Menampilkan alasan penutupan ringkas.
+   - `lewat`: Transparan, teks redup (*dim text*).
+   - **Prinsip Aksesibilitas**: Status slot WAJIB selalu terbaca lewat teks eksplisit dan pola tekstur visual, tidak hanya bergantung pada perbedaan warna semata.
+   - **Badge Kategori**: BULANAN menggunakan pil penuh putih dengan teks hitam; HARIAN menggunakan pil outline putih dengan teks putih.
+3. **Tabel Responsif & Rapat**: Garis tipis 1px, rapat (*compact*), tanpa zebra belang tebal. Pada layar kecil (< 640px), tabel bertransformasi menjadi daftar bertumpuk (label dan nilai) tanpa scroll horizontal.
+4. **Dashboard Ringkas Tanpa Kartu KPI Slop**: Angka ringkasan disajikan sebagai baris tipografi besar dengan label DM Mono / Inter Tight kapital, TANPA grid kartu KPI berikon kecil generik dalam kotak berwarna-warni.
+5. **Grafik SVG Rata**: Grafik dibuat menggunakan SVG datar (*flat bar chart*), tanpa efek glossy, gradien mengkilap, atau 3D.
+6. **Bukti Booking & Tiket Masuk**: Menggunakan permukaan terang datar (gaya kertas fisik, teks gelap) dengan aksen garis putus-putus (*dashed line*) dan kode booking besar font monospace: ini adalah satu-satunya elemen permukaan terang pada website bertema gelap.
+7. **Formulir**: Label selalu di atas input, pesan error ringkas di bawah field menggunakan `--merah` (`#FF5A4D`), tombol utama pil limau tanpa efek glow.
+8. **Integritas Copywriting & Kamus Terlarang**: Pengujian `DesignRulesTest` memastikan antarmuka tidak memuat istilah terlarang: "Sekali main", "Paket bulanan", "penjaga", kata formal "Anda", emoji, backdrop-filter di luar navbar, glow/bayangan berwarna, atau efek gradient text.

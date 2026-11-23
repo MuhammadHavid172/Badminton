@@ -181,6 +181,92 @@
 </section>
 
 {{-- ==========================================================================
+     SECTION HARI INI (PAPAN RINGKAS JADWAL)
+     ========================================================================== --}}
+@if (isset($todaySchedule) && !empty($todaySchedule['grid']))
+<section class="jadwal-hari-ini-section reveal" aria-labelledby="judul-jadwal-hari-ini">
+    <div class="kontainer">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--spasi-4); flex-wrap: wrap; gap: var(--spasi-2);">
+            <div>
+                <x-penanda teks="STATUS HARI INI" style="margin-bottom: var(--spasi-2);" />
+                <h2 id="judul-jadwal-hari-ini" style="font-size: clamp(2rem, 4vw, 3rem); font-family: var(--font-judul); font-weight: 600; text-transform: uppercase;">
+                    JADWAL HARI INI
+                </h2>
+                <span style="font-size: 0.9375rem; color: var(--teks-redup);">
+                    {{ $todaySchedule['date_formatted'] }} (Zona WIT)
+                </span>
+            </div>
+
+            <x-cta href="{{ route('jadwal') }}" teks="LIHAT SEMUA JADWAL" />
+        </div>
+
+        {{-- Desktop Grid --}}
+        <div class="papan-desktop-view papan-jadwal-wrapper">
+            <table class="papan-table" aria-label="Tabel Jadwal Lapangan Hari Ini">
+                <thead>
+                    <tr>
+                        <th scope="col" class="th-sesi-col">Sesi Waktu</th>
+                        @foreach ($todaySchedule['courts'] as $court)
+                            <th scope="col">{{ $court['name'] }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($todaySchedule['grid'] as $row)
+                        <tr>
+                            <td class="sesi-cell">
+                                <span class="sesi-label-badge">{{ $row['session']['label'] }}</span>
+                                <span class="sesi-time-range">{{ $row['session']['time_range'] }} WIT</span>
+                                @if ($row['session']['is_current'])
+                                    <div class="badge-sedang-main">
+                                        <span class="badge-sedang-main-dot" aria-hidden="true"></span>
+                                        <span>Sedang Main</span>
+                                    </div>
+                                @endif
+                            </td>
+                            @foreach ($row['courts'] as $slot)
+                                <td>
+                                    <x-slot-cell :slotItem="$slot" :compact="true" />
+                                </td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Mobile Grid (< 640px) --}}
+        <div class="papan-mobile-view">
+            @foreach ($todaySchedule['grid'] as $row)
+                <div class="mobile-session-card">
+                    <div class="mobile-session-header">
+                        <div>
+                            <span class="mobile-session-title">{{ $row['session']['label'] }}</span>
+                            <span class="sesi-time-range">{{ $row['session']['time_range'] }} WIT</span>
+                        </div>
+                        @if ($row['session']['is_current'])
+                            <div class="badge-sedang-main">
+                                <span class="badge-sedang-main-dot" aria-hidden="true"></span>
+                                <span>Sedang Main</span>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="mobile-courts-grid">
+                        @foreach ($row['courts'] as $slot)
+                            <div class="mobile-court-item">
+                                <span class="mobile-court-label">{{ $slot['court_name'] }}</span>
+                                <x-slot-cell :slotItem="$slot" :compact="true" />
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- ==========================================================================
      SECTION F: HARGA
      ========================================================================== --}}
 <section id="harga" class="harga-section reveal" aria-labelledby="judul-harga">

@@ -29,36 +29,35 @@ class LandingPageTest extends TestCase
     }
 
     /**
-     * Memastikan route halaman sementara /jadwal mengembalikan 200.
+     * Memastikan route halaman publik /jadwal mengembalikan 200.
      */
     public function test_halaman_jadwal_mengembalikan_status_200(): void
     {
         $response = $this->get('/jadwal');
         $response->assertStatus(200);
         $response->assertSee('Jadwal Lapangan');
-        $response->assertSee('Kembali ke Beranda');
     }
 
     /**
-     * Memastikan route halaman sementara /masuk mengembalikan 200.
+     * Memastikan route halaman masuk /masuk mengembalikan 200.
      */
     public function test_halaman_masuk_mengembalikan_status_200(): void
     {
         $response = $this->get('/masuk');
         $response->assertStatus(200);
-        $response->assertSee('Masuk ke Akun');
-        $response->assertSee('Kembali ke Beranda');
+        $response->assertSee('Masuk');
+        $response->assertSee('Password');
     }
 
     /**
-     * Memastikan route halaman sementara /daftar mengembalikan 200.
+     * Memastikan route halaman daftar /daftar mengembalikan 200.
      */
     public function test_halaman_daftar_mengembalikan_status_200(): void
     {
         $response = $this->get('/daftar');
         $response->assertStatus(200);
-        $response->assertSee('Daftar Akun');
-        $response->assertSee('Kembali ke Beranda');
+        $response->assertSee('Daftar');
+        $response->assertSee('Nomor HP');
     }
 
     /**

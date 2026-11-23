@@ -33,8 +33,58 @@
 
                 <!-- Aksi Kanan (Desktop) -->
                 <div class="navbar-actions">
-                    <a href="{{ route('masuk') }}" class="link-masuk">Masuk</a>
-                    <a href="{{ route('daftar') }}" class="tombol tombol-solid">Daftar</a>
+                    @guest
+                        <a href="{{ route('masuk') }}" class="link-masuk">Masuk</a>
+                        <a href="{{ route('daftar') }}" class="tombol tombol-solid">Daftar</a>
+                    @else
+                        <div class="user-menu-wrapper" id="user-menu-container">
+                            <button
+                                type="button"
+                                class="user-menu-btn"
+                                id="user-menu-toggle"
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                aria-controls="user-dropdown-menu"
+                            >
+                                <span>{{ Str::words(auth()->user()->name, 1, '') }}</span>
+                                <span aria-hidden="true" style="font-size: 0.6875rem;">▼</span>
+                            </button>
+
+                            <div
+                                class="user-dropdown"
+                                id="user-dropdown-menu"
+                                role="menu"
+                                aria-labelledby="user-menu-toggle"
+                            >
+                                <a href="{{ route('booking.saya') }}" class="user-dropdown-item" role="menuitem">
+                                    Booking saya
+                                </a>
+
+                                <a href="{{ route('akun') }}" class="user-dropdown-item" role="menuitem">
+                                    Akun saya
+                                </a>
+
+                                @if (auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}" class="user-dropdown-item" role="menuitem">
+                                        Dashboard Admin
+                                    </a>
+                                @elseif (auth()->user()->isOwner())
+                                    <a href="{{ route('owner.dashboard') }}" class="user-dropdown-item" role="menuitem">
+                                        Mode Pantau
+                                    </a>
+                                @endif
+
+                                <div class="user-dropdown-separator" role="separator" aria-hidden="true"></div>
+
+                                <form action="{{ route('keluar') }}" method="POST" style="margin: 0;">
+                                    @csrf
+                                    <button type="submit" class="user-dropdown-item" role="menuitem" style="color: var(--merah);">
+                                        Keluar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @endguest
                 </div>
 
                 <!-- Tombol Hamburger (Mobile) -->
@@ -64,8 +114,32 @@
                 </ul>
             </div>
             <div class="mobile-menu-actions">
-                <a href="{{ route('masuk') }}" class="tombol tombol-sekunder" style="width: 100%;">Masuk</a>
-                <a href="{{ route('daftar') }}" class="tombol tombol-solid" style="width: 100%;">Daftar</a>
+                @guest
+                    <a href="{{ route('masuk') }}" class="tombol tombol-sekunder" style="width: 100%;">Masuk</a>
+                    <a href="{{ route('daftar') }}" class="tombol tombol-solid" style="width: 100%;">Daftar</a>
+                @else
+                    <a href="{{ route('booking.saya') }}" class="tombol tombol-solid" style="width: 100%;">
+                        Booking Saya
+                    </a>
+                    <a href="{{ route('akun') }}" class="tombol tombol-sekunder" style="width: 100%;">
+                        Akun Saya ({{ Str::words(auth()->user()->name, 1, '') }})
+                    </a>
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="tombol tombol-outline" style="width: 100%;">
+                            Dashboard Admin
+                        </a>
+                    @elseif (auth()->user()->isOwner())
+                        <a href="{{ route('owner.dashboard') }}" class="tombol tombol-outline" style="width: 100%;">
+                            Mode Pantau
+                        </a>
+                    @endif
+                    <form action="{{ route('keluar') }}" method="POST" style="width: 100%; margin-top: var(--spasi-2);">
+                        @csrf
+                        <button type="submit" class="tombol tombol-sekunder" style="width: 100%; color: var(--merah); border-color: rgba(255, 90, 77, 0.4);">
+                            Keluar
+                        </button>
+                    </form>
+                @endguest
             </div>
         </div>
     </header>

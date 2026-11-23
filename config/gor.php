@@ -35,6 +35,38 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | DAFTAR LAPANGAN (DATA AWAL / SEEDER)
+    |--------------------------------------------------------------------------
+    | PERINGATAN PENTING:
+    | Lapangan adalah DATA dinamis dalam database, BUKAN angka tetap.
+    | Jumlah dan nama lapangan diambil dari array di bawah ini sebagai placeholder.
+    | SESUAIKAN DENGAN KONDISI LAPANGAN SEBENARNYA SEBELUM MENJALANKAN:
+    |   php artisan migrate:fresh --seed
+    | Jangan pernah mengasumsikan jumlah lapangan di kode mana pun!
+    |--------------------------------------------------------------------------
+    */
+    'courts' => [
+        ['name' => 'Lapangan 1', 'sort_order' => 1, 'is_active' => true],
+        ['name' => 'Lapangan 2', 'sort_order' => 2, 'is_active' => true],
+        ['name' => 'Lapangan 3', 'sort_order' => 3, 'is_active' => true],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | SESI WAKTU BERMAIN PER HARI (DATA AWAL / SEEDER)
+    |--------------------------------------------------------------------------
+    | 4 Sesi bawaan operasional GOR. Satu "slot" = lapangan + tanggal + sesi.
+    |--------------------------------------------------------------------------
+    */
+    'sessions' => [
+        ['label' => 'Sesi 1', 'start_time' => '08:00', 'end_time' => '11:00', 'sort_order' => 1, 'is_active' => true],
+        ['label' => 'Sesi 2', 'start_time' => '11:00', 'end_time' => '15:00', 'sort_order' => 2, 'is_active' => true],
+        ['label' => 'Sesi 3', 'start_time' => '15:00', 'end_time' => '19:00', 'sort_order' => 3, 'is_active' => true],
+        ['label' => 'Sesi 4', 'start_time' => '19:00', 'end_time' => '23:00', 'sort_order' => 4, 'is_active' => true],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Durasi Penahanan Slot (Menit)
     |--------------------------------------------------------------------------
     | Slot ditahan selama hold_minutes sebelum otomatis dilepas jika belum dibayar.
@@ -43,16 +75,39 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Harga Sewa Lapangan (PLACEHOLDER)
+    | Jumlah Pertemuan Paket Bulanan
     |--------------------------------------------------------------------------
-    | single: 200000 (PLACEHOLDER)
-    | package: 600000 (PLACEHOLDER, 4 pertemuan mingguan)
-    | is_placeholder: flag untuk menandai harga masih berupa placeholder contoh.
+    | Bulanan = 4 pertemuan mingguan berturut-turut pada hari, lapangan, dan sesi sama.
+    */
+    'package_meetings' => (int) env('GOR_PACKAGE_MEETINGS', 4),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Timeout Idle Sesi Pengguna (Menit)
+    |--------------------------------------------------------------------------
+    */
+    'idle_timeout_minutes' => (int) env('GOR_IDLE_TIMEOUT_MINUTES', 60),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Driver Pembayaran
+    |--------------------------------------------------------------------------
+    | Bawaan: 'simulated' (simulasi arsitektur gateway yang bisa diganti nanti).
+    */
+    'payment_driver' => env('PAYMENT_DRIVER', 'simulated'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Harga Sewa Lapangan (PLACEHOLDER DATA)
+    |--------------------------------------------------------------------------
+    | single: 200000 (PLACEHOLDER Harian)
+    | package: 600000 (PLACEHOLDER Bulanan, 4 pertemuan mingguan)
+    | is_placeholder: flag penanda harga contoh.
     */
     'harga' => [
-        'single' => (int) env('GOR_HARGA_SINGLE', 200000), // PLACEHOLDER
-        'package' => (int) env('GOR_HARGA_PACKAGE', 600000), // PLACEHOLDER
-        'is_placeholder' => true, // PLACEHOLDER
+        'single' => (int) env('GOR_HARGA_SINGLE', 200000),
+        'package' => (int) env('GOR_HARGA_PACKAGE', 600000),
+        'is_placeholder' => true,
     ],
 
     /*
@@ -69,10 +124,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Daftar Lapangan
+    | Fitur Sistem
     |--------------------------------------------------------------------------
-    | Hanya untuk teks, array nama lapangan, bawaan KOSONG ([]).
-    | Jika array kosong, bagian UI yang memakainya disembunyikan.
+    */
+    'fitur' => [
+        'online_booking' => true,
+        'simulated_payment' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Daftar Lapangan (Helper Teks Legacy)
+    |--------------------------------------------------------------------------
+    | Untuk kompatibilitas string sederhana jika ada kode lama yang memanggil.
     */
     'daftar_lapangan' => array_filter(
         array_map('trim', explode(',', (string) env('GOR_DAFTAR_LAPANGAN', '')))

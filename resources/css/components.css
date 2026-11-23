@@ -1143,3 +1143,1601 @@ details[open] .faq-icon {
         align-items: center;
     }
 }
+
+/* ==========================================================================
+   13. JADWAL LAPANGAN (BOARD & KALENDER) - FASE 2
+   ========================================================================== */
+.jadwal-page {
+    padding-top: calc(80px + var(--spasi-6));
+    padding-bottom: var(--spasi-16);
+    min-height: 85vh;
+}
+
+.jadwal-header {
+    margin-bottom: var(--spasi-6);
+    border-bottom: 1px solid var(--garis);
+    padding-bottom: var(--spasi-4);
+}
+
+.jadwal-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--spasi-3);
+    margin-bottom: var(--spasi-4);
+}
+
+.jadwal-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-1);
+}
+
+.jadwal-subtitle {
+    font-size: 0.875rem;
+    color: var(--teks-redup);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+}
+
+.jadwal-main-date {
+    font-family: var(--font-judul);
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: var(--tracking-judul);
+    color: var(--putih);
+    margin: 0;
+}
+
+/* Toggle Teks Tampilan: Per Hari | Kalender */
+.tampilan-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spasi-1);
+    background-color: var(--hitam-2);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-pil);
+    padding: 4px;
+}
+
+.tampilan-toggle-item {
+    padding: 8px 16px;
+    border-radius: var(--radius-pil);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--teks-redup);
+    text-decoration: none;
+    transition: background-color var(--transisi-cepat), color var(--transisi-cepat);
+}
+
+.tampilan-toggle-item:hover {
+    color: var(--putih);
+}
+
+.tampilan-toggle-item.active {
+    background-color: var(--lime);
+    color: var(--hitam);
+}
+
+/* Navigasi Tanggal & Strip 7 Hari */
+.jadwal-nav-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spasi-3);
+    margin-top: var(--spasi-4);
+}
+
+.nav-buttons-group {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spasi-2);
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: var(--radius-pil);
+    border: 1px solid var(--garis);
+    background-color: var(--hitam-2);
+    color: var(--putih);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color var(--transisi-cepat), background-color var(--transisi-cepat);
+}
+
+.nav-btn:hover:not(.disabled) {
+    border-color: var(--putih);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.nav-btn.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.nav-btn-today {
+    border-color: var(--lime);
+    color: var(--lime);
+}
+
+.nav-date-input {
+    background-color: var(--hitam-2);
+    border: 1px solid var(--garis);
+    color: var(--putih);
+    padding: 8px 12px;
+    border-radius: var(--radius-pil);
+    font-size: 0.875rem;
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+}
+
+.nav-date-input:focus {
+    border-color: var(--lime);
+}
+
+/* Strip 7 Hari Terdekat */
+.strip-hari-container {
+    display: flex;
+    gap: var(--spasi-1);
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.strip-hari-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    min-width: 80px;
+    border-radius: 12px;
+    border: 1px solid var(--garis);
+    background-color: var(--hitam-2);
+    text-decoration: none;
+    transition: border-color var(--transisi-cepat), background-color var(--transisi-cepat);
+}
+
+.strip-hari-btn:hover {
+    border-color: var(--lime);
+}
+
+.strip-hari-btn.active {
+    background-color: var(--lime);
+    border-color: var(--lime);
+}
+
+.strip-hari-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--teks-redup);
+    text-transform: uppercase;
+}
+
+.strip-hari-num {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--putih);
+}
+
+.strip-hari-btn.active .strip-hari-name,
+.strip-hari-btn.active .strip-hari-num {
+    color: var(--hitam);
+}
+
+/* Papan Jadwal Grid (Desktop) */
+.papan-jadwal-wrapper {
+    overflow-x: auto;
+    margin-top: var(--spasi-4);
+    border: 1px solid var(--garis);
+    border-radius: 16px;
+    background-color: var(--hitam-2);
+}
+
+.papan-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    text-align: left;
+}
+
+.papan-table th,
+.papan-table td {
+    border: 1px solid var(--garis);
+    padding: var(--spasi-2);
+    vertical-align: top;
+}
+
+.papan-table th {
+    background-color: #121210;
+    color: var(--putih);
+    font-family: var(--font-judul);
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 14px 16px;
+}
+
+.th-sesi-col {
+    width: 200px;
+}
+
+.sesi-cell {
+    background-color: #121210;
+    padding: 16px !important;
+}
+
+.sesi-label-badge {
+    display: inline-block;
+    font-family: var(--font-judul);
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--putih);
+}
+
+.sesi-time-range {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--teks-redup);
+    margin-top: 4px;
+}
+
+.badge-sedang-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 2px 8px;
+    border-radius: var(--radius-pil);
+    background-color: rgba(218, 255, 4, 0.15);
+    border: 1px solid var(--lime);
+    color: var(--lime);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.badge-sedang-main-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--lime);
+}
+
+/* Komponen Slot Cell */
+.slot-cell {
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 88px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    transition: opacity var(--transisi-cepat);
+    outline: none;
+}
+
+.slot-cell:focus-visible {
+    outline: 2px solid var(--lime);
+    outline-offset: 2px;
+}
+
+.slot-cell-compact {
+    min-height: 72px;
+    padding: 8px;
+}
+
+/* 1. Kosong */
+.slot-cell-kosong {
+    background-color: var(--lime);
+    color: #000000;
+}
+
+.slot-cell-kosong .slot-status-text {
+    font-family: var(--font-judul);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #000000;
+}
+
+.slot-cell-kosong .slot-hint-text {
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.7);
+    font-weight: 500;
+}
+
+.slot-link-action {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-pil);
+    background-color: #000000;
+    color: var(--lime);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 4px;
+}
+
+/* 2. Menunggu Bayar */
+.slot-cell-menunggu-bayar {
+    background-color: #FFB020;
+    background-image: radial-gradient(rgba(0, 0, 0, 0.25) 1.2px, transparent 1.2px);
+    background-size: 6px 6px;
+    color: #000000;
+}
+
+.slot-cell-menunggu-bayar .slot-status-text {
+    font-family: var(--font-judul);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #000000;
+}
+
+.slot-cell-menunggu-bayar .slot-hint-text {
+    font-size: 0.75rem;
+    color: rgba(0, 0, 0, 0.75);
+    font-weight: 500;
+}
+
+/* 3. Terisi */
+.slot-cell-terisi {
+    background-color: #2A2A25;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--putih);
+}
+
+.slot-header-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+
+.slot-pemesan-nama {
+    font-family: var(--font-judul);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--putih);
+    line-height: 1.25;
+    word-break: break-word;
+}
+
+.badge-sisa-satu {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: var(--radius-pil);
+    background-color: rgba(218, 255, 4, 0.18);
+    border: 1px solid var(--lime);
+    color: var(--lime);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* 4. Ditutup */
+.slot-cell-ditutup {
+    background-color: #5A5A52;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 6px, rgba(0, 0, 0, 0.25) 6px, rgba(0, 0, 0, 0.25) 12px);
+    color: var(--putih);
+}
+
+.slot-cell-ditutup .slot-status-text {
+    font-family: var(--font-judul);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--putih);
+}
+
+.slot-alasan-text {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    word-break: break-word;
+}
+
+/* 5. Lewat */
+.slot-cell-lewat {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    color: var(--teks-redup);
+}
+
+.slot-text-dim {
+    color: var(--teks-redup) !important;
+    font-size: 0.8125rem;
+}
+
+/* Legenda Status Jadwal */
+.jadwal-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spasi-3);
+    margin-top: var(--spasi-4);
+    padding-top: var(--spasi-4);
+    border-top: 1px solid var(--garis);
+}
+
+.legenda-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spasi-1);
+    font-size: 0.8125rem;
+    color: var(--teks-redup);
+}
+
+.legenda-swatch {
+    width: 20px;
+    height: 14px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.swatch-kosong {
+    background-color: var(--lime);
+}
+
+.swatch-menunggu {
+    background-color: #FFB020;
+    background-image: radial-gradient(rgba(0, 0, 0, 0.3) 1px, transparent 1px);
+    background-size: 4px 4px;
+}
+
+.swatch-terisi {
+    background-color: #2A2A25;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.swatch-ditutup {
+    background-color: #5A5A52;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0, 0, 0, 0.3) 3px, rgba(0, 0, 0, 0.3) 6px);
+}
+
+.swatch-lewat {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+}
+
+/* Tampilan Mobile Papan Jadwal (< 600px) */
+.papan-mobile-view {
+    display: none;
+    flex-direction: column;
+    gap: var(--spasi-4);
+    margin-top: var(--spasi-4);
+}
+
+.mobile-session-card {
+    border: 1px solid var(--garis);
+    border-radius: 16px;
+    background-color: var(--hitam-2);
+    padding: var(--spasi-3);
+}
+
+.mobile-session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spasi-3);
+    padding-bottom: var(--spasi-2);
+    border-bottom: 1px solid var(--garis);
+}
+
+.mobile-session-title {
+    font-family: var(--font-judul);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--putih);
+}
+
+.mobile-courts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spasi-2);
+}
+
+.mobile-court-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mobile-court-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--teks-redup);
+    text-transform: uppercase;
+}
+
+@media (max-width: 639px) {
+    .papan-desktop-view {
+        display: none;
+    }
+    .papan-mobile-view {
+        display: flex;
+    }
+}
+
+/* ==========================================================================
+   14. KALENDER JADWAL (TAMPILAN BULAN)
+   ========================================================================== */
+.jadwal-hari-ini-section {
+    padding: var(--spasi-10) 0;
+    border-bottom: 1px solid var(--garis);
+    background-color: var(--hitam);
+}
+.kalender-container {
+    margin-top: var(--spasi-4);
+}
+
+.kalender-month-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spasi-4);
+}
+
+.kalender-month-title {
+    font-family: var(--font-judul);
+    font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+    font-weight: 600;
+    color: var(--putih);
+    letter-spacing: var(--tracking-judul);
+}
+
+.kalender-grid-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: var(--garis);
+    border: 1px solid var(--garis);
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+}
+
+.kalender-header-cell {
+    background-color: #121210;
+    padding: 12px 8px;
+    text-align: center;
+    font-family: var(--font-judul);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--teks-redup);
+    text-transform: uppercase;
+}
+
+.kalender-grid-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: var(--garis);
+    border: 1px solid var(--garis);
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+}
+
+.kalender-day-cell {
+    background-color: var(--hitam-2);
+    min-height: 120px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-decoration: none;
+    color: var(--putih);
+    transition: background-color var(--transisi-cepat);
+    box-sizing: border-box;
+}
+
+.kalender-day-cell:hover:not(.kalender-day-empty) {
+    background-color: #1c1c18;
+}
+
+.kalender-day-cell.is-today {
+    outline: 2px solid var(--lime);
+    outline-offset: -2px;
+}
+
+.kalender-day-cell.is-past {
+    opacity: 0.45;
+}
+
+.kalender-day-empty {
+    background-color: #10100e;
+    cursor: default;
+}
+
+.kalender-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kalender-day-number {
+    font-family: var(--font-judul);
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.kalender-empty-count {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--lime);
+}
+
+/* Mini Matrix Kotak Status per Hari di Kalender */
+.kalender-mini-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin: 8px 0;
+}
+
+.mini-matrix-row {
+    display: flex;
+    gap: 3px;
+}
+
+.mini-matrix-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    position: relative;
+}
+
+.mini-matrix-dot.kosong {
+    background-color: var(--lime);
+}
+
+.mini-matrix-dot.menunggu_bayar {
+    background-color: #FFB020;
+}
+
+.mini-matrix-dot.terisi {
+    background-color: #2A2A25;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mini-matrix-dot.ditutup {
+    background-color: #5A5A52;
+}
+
+.mini-matrix-dot.lewat {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.mini-matrix-dot.has-package::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@media (max-width: 639px) {
+    .kalender-day-cell {
+        min-height: 64px;
+        padding: 6px;
+    }
+    .kalender-mini-matrix {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   15. AUTENTIKASI (MASUK & DAFTAR) & AKUN - FASE 3
+   ========================================================================== */
+.auth-page {
+    padding-top: calc(80px + var(--spasi-6));
+    padding-bottom: var(--spasi-16);
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+}
+
+.auth-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spasi-8);
+    align-items: center;
+}
+
+@media (min-width: 900px) {
+    .auth-grid {
+        grid-template-columns: 1.1fr 1fr;
+        gap: var(--spasi-12);
+    }
+}
+
+.auth-left {
+    position: relative;
+    padding: var(--spasi-6) 0;
+}
+
+.auth-title {
+    font-family: var(--font-judul);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 600;
+    line-height: var(--lead-rapat);
+    letter-spacing: var(--tracking-judul);
+    color: var(--putih);
+    margin: 0 0 var(--spasi-4);
+}
+
+.auth-desc {
+    font-size: clamp(1rem, 1.5vw, 1.1875rem);
+    color: var(--teks-redup);
+    line-height: var(--lead-normal);
+    max-width: 480px;
+}
+
+.auth-right {
+    background: transparent;
+    padding: 0;
+}
+
+/* Form Styles Murni */
+.form-group {
+    margin-bottom: var(--spasi-4);
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--putih);
+    margin-bottom: var(--spasi-1);
+}
+
+.form-label-optional {
+    color: var(--teks-redup);
+    font-weight: 400;
+    font-size: 0.75rem;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background-color: var(--hitam-2);
+    border: 1px solid var(--garis);
+    border-radius: 12px;
+    color: var(--putih);
+    font-family: var(--font-isi);
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color var(--transisi-cepat);
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: var(--lime);
+}
+
+.form-input.has-error {
+    border-color: var(--merah);
+}
+
+.form-error {
+    font-size: 0.8125rem;
+    color: var(--merah);
+    margin-top: 6px;
+    line-height: 1.3;
+}
+
+.form-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spasi-2);
+    margin-bottom: var(--spasi-5);
+    cursor: pointer;
+}
+
+.form-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--lime);
+    cursor: pointer;
+}
+
+.form-checkbox-label {
+    font-size: 0.875rem;
+    color: var(--teks-redup);
+    cursor: pointer;
+}
+
+.form-footer-switch {
+    margin-top: var(--spasi-4);
+    font-size: 0.875rem;
+    color: var(--teks-redup);
+}
+
+.form-footer-link {
+    color: var(--lime);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: color var(--transisi-cepat);
+}
+
+.form-footer-link:hover {
+    color: var(--putih);
+}
+
+/* Halaman Akun */
+.akun-page {
+    padding-top: calc(80px + var(--spasi-6));
+    padding-bottom: var(--spasi-16);
+    min-height: 85vh;
+}
+
+.akun-header {
+    border-bottom: 1px solid var(--garis);
+    padding-bottom: var(--spasi-4);
+    margin-bottom: var(--spasi-8);
+}
+
+.akun-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spasi-8);
+}
+
+@media (min-width: 860px) {
+    .akun-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--spasi-8);
+    }
+}
+
+.akun-card-section {
+    border: 1px solid var(--garis);
+    border-radius: 20px;
+    background-color: var(--hitam-2);
+    padding: var(--spasi-6);
+}
+
+.alert-success {
+    padding: 12px 16px;
+    background-color: rgba(218, 255, 4, 0.12);
+    border: 1px solid var(--lime);
+    border-radius: 8px;
+    color: var(--lime);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: var(--spasi-4);
+}
+
+/* User Menu Navbar Dropdown */
+.user-menu-wrapper {
+    position: relative;
+}
+
+.user-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: var(--hitam-2);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-pil);
+    color: var(--putih);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color var(--transisi-cepat);
+}
+
+.user-menu-btn:hover,
+.user-menu-btn:focus-visible {
+    border-color: var(--lime);
+    outline: none;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 220px;
+    background-color: #1a1a16;
+    border: 1px solid var(--garis);
+    border-radius: 14px;
+    padding: 8px;
+    display: none;
+    flex-direction: column;
+    z-index: 100;
+}
+
+.user-dropdown.is-open {
+    display: flex;
+}
+
+.user-dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: var(--putih);
+    text-decoration: none;
+    text-align: left;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color var(--transisi-cepat);
+}
+
+.user-dropdown-item:hover,
+.user-dropdown-item:focus-visible {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--lime);
+    outline: none;
+}
+
+.user-dropdown-separator {
+    height: 1px;
+    background-color: var(--garis);
+    margin: 6px 0;
+}
+
+
+
+/* ==========================================================================
+   FASE 4: BOOKING, SLIP TIKET, DAN MANAJEMEN SLOT
+   ========================================================================== */
+
+/* 1. Slip Tiket Datar (Satu-satunya Permukaan Terang di Halaman Gelap) */
+.slip-tiket {
+    background-color: #F4F4F0;
+    color: #1A1A18;
+    border: 2px dashed #C8C8C0;
+    border-radius: var(--radius-sm);
+    padding: var(--spasi-6);
+    position: relative;
+    box-sizing: border-box;
+}
+
+.slip-tiket-header {
+    border-bottom: 2px dashed #C8C8C0;
+    padding-bottom: var(--spasi-4);
+    margin-bottom: var(--spasi-4);
+}
+
+.slip-tiket-sub {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #777770;
+}
+
+.slip-tiket-kode {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #1A1A18;
+    line-height: 1.1;
+    margin: var(--spasi-1) 0;
+}
+
+.slip-tiket-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: #E2E2DC;
+    color: #444440;
+    padding: 2px 8px;
+    border-radius: var(--radius-pil);
+}
+
+.slip-tiket-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-3);
+}
+
+.slip-tiket-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.9375rem;
+    gap: var(--spasi-3);
+}
+
+.slip-tiket-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #666660;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.slip-tiket-val {
+    font-weight: 600;
+    color: #1A1A18;
+    text-align: right;
+    word-break: break-word;
+}
+
+.slip-tiket-val-large {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1A1A18;
+}
+
+.slip-tiket-footer {
+    border-top: 2px dashed #C8C8C0;
+    padding-top: var(--spasi-4);
+    margin-top: var(--spasi-4);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--spasi-2);
+}
+
+.slip-meeting-item {
+    background-color: #EBEBE4;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid #DCDCD4;
+}
+
+.slip-meeting-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #1A1A18;
+    color: #F4F4F0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Badge status pada slip tiket */
+.slip-status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: var(--radius-pil);
+}
+
+.slip-status-pending_payment {
+    background-color: #FFF2D6;
+    color: #995500;
+    border: 1px solid #FFB020;
+}
+
+.slip-status-paid {
+    background-color: #E6F8C8;
+    color: #2D5800;
+    border: 1px solid #6EAA00;
+}
+
+.slip-status-cancelled {
+    background-color: #FDE8E8;
+    color: #9C1414;
+    border: 1px solid #F08080;
+}
+
+.slip-status-expired {
+    background-color: #EAEAEA;
+    color: #666666;
+    border: 1px solid #CCCCCC;
+}
+
+/* 2. Layout Grid Booking Dua Kolom Desktop / Satu Kolom HP */
+.booking-layout-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: var(--spasi-8);
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .booking-layout-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spasi-6);
+    }
+}
+
+.booking-section-box {
+    background-color: var(--abu-gelap);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-sm);
+    padding: var(--spasi-5);
+}
+
+/* 3. Baris Radio Diperbesar untuk Kategori Sewa */
+.booking-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-3);
+}
+
+.booking-radio-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spasi-4);
+    padding: var(--spasi-4);
+    background-color: var(--abu-gelap);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color var(--transisi-cepat), background-color var(--transisi-cepat);
+    box-sizing: border-box;
+}
+
+.booking-radio-row:hover:not(.is-disabled) {
+    border-color: var(--teks-redup);
+}
+
+.booking-radio-row:has(.booking-radio-input:checked) {
+    border-color: var(--lime);
+    background-color: rgba(218, 255, 4, 0.04);
+}
+
+.booking-radio-row.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.booking-radio-input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--garis);
+    border-radius: 50%;
+    margin-top: 2px;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: border-color var(--transisi-cepat);
+}
+
+.booking-radio-input:checked {
+    border-color: var(--lime);
+}
+
+.booking-radio-input:checked::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background-color: var(--lime);
+}
+
+.booking-radio-row.is-disabled .booking-radio-input {
+    cursor: not-allowed;
+}
+
+.booking-radio-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.booking-radio-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spasi-1);
+    flex-wrap: wrap;
+    gap: var(--spasi-2);
+}
+
+.booking-radio-title {
+    font-family: var(--font-judul);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--putih);
+}
+
+.booking-radio-price {
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--lime);
+}
+
+.booking-radio-desc {
+    font-size: 0.875rem;
+    color: var(--teks-redup);
+    line-height: 1.5;
+    margin-top: 2px;
+}
+
+.booking-package-dates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: var(--spasi-2);
+}
+
+.package-date-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--putih);
+}
+
+.package-date-bullet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--teks-redup);
+}
+
+.booking-saving-tag {
+    display: inline-block;
+    margin-top: var(--spasi-2);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--lime);
+    background-color: rgba(218, 255, 4, 0.12);
+    padding: 2px 8px;
+    border-radius: var(--radius-pil);
+}
+
+.booking-policy-notice {
+    font-size: 0.8125rem;
+    font-style: italic;
+    color: var(--teks-redup);
+    margin-top: var(--spasi-2);
+}
+
+.booking-conflict-msg {
+    margin-top: var(--spasi-2);
+    font-size: 0.8125rem;
+    color: var(--merah);
+    line-height: 1.4;
+}
+
+/* 4. Panel Bawah Menempel Khusus Mobile (< 768px) */
+.booking-sticky-bar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #161613;
+    border-top: 1px solid var(--garis);
+    padding: var(--spasi-3) var(--spasi-4);
+    z-index: 900;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spasi-3);
+    box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+    .booking-sticky-bar {
+        display: flex;
+    }
+
+    .booking-submit-desktop {
+        display: none;
+    }
+}
+
+.sticky-bar-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.sticky-bar-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--teks-redup);
+    letter-spacing: 0.05em;
+}
+
+.sticky-bar-price {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--lime);
+    line-height: 1.2;
+}
+
+.sticky-bar-date {
+    font-size: 0.75rem;
+    color: var(--teks-redup);
+}
+
+/* 5. Hitung Mundur Waktu Tahan */
+.countdown-card {
+    background-color: #231C08;
+    border: 1px solid #FFB020;
+    border-radius: var(--radius-sm);
+    padding: var(--spasi-4) var(--spasi-6);
+    margin-bottom: var(--spasi-6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spasi-3);
+}
+
+.countdown-header {
+    display: flex;
+    flex-direction: column;
+}
+
+.countdown-title {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #FFB020;
+    letter-spacing: 0.05em;
+}
+
+.countdown-sub {
+    font-size: 0.8125rem;
+    color: #D4B26F;
+}
+
+.countdown-timer-display {
+    font-family: var(--font-mono);
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #FFB020;
+    line-height: 1;
+    letter-spacing: 0.05em;
+}
+
+.countdown-timer-display.is-expired {
+    color: var(--merah);
+}
+
+/* 6. Halaman Booking Saya: Tiga Bagian Daftar Baris */
+.booking-section-group {
+    background-color: var(--abu-gelap);
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-sm);
+    padding: var(--spasi-6);
+}
+
+.booking-section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spasi-3);
+    margin-bottom: var(--spasi-5);
+    padding-bottom: var(--spasi-3);
+    border-bottom: 1px solid var(--garis);
+}
+
+.booking-section-title {
+    font-family: var(--font-judul);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-judul);
+    color: var(--putih);
+    margin: 0;
+}
+
+.booking-section-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: var(--radius-pil);
+    background-color: rgba(255, 255, 255, 0.1);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--putih);
+}
+
+.booking-empty-box {
+    padding: var(--spasi-6);
+    text-align: center;
+    color: var(--teks-redup);
+    font-size: 0.9375rem;
+}
+
+.booking-rows-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-4);
+}
+
+.booking-row-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spasi-4);
+    background-color: #171714;
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-sm);
+    gap: var(--spasi-4);
+    flex-wrap: wrap;
+}
+
+.booking-row-item.is-pending {
+    border-left: 3px solid #FFB020;
+}
+
+.booking-row-item.is-history {
+    opacity: 0.8;
+}
+
+.booking-row-main {
+    flex: 1;
+    min-width: 260px;
+}
+
+.booking-row-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spasi-2);
+    margin-bottom: var(--spasi-3);
+    flex-wrap: wrap;
+}
+
+.booking-code-pill {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--putih);
+    letter-spacing: 0.05em;
+}
+
+.booking-row-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spasi-3);
+}
+
+.booking-row-detail-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    color: var(--teks-redup);
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.detail-val {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--putih);
+}
+
+.detail-val-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.meeting-date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--putih);
+}
+
+.meeting-date-badge.is-passed {
+    opacity: 0.45;
+    text-decoration: line-through;
+}
+
+.meeting-date-badge.is-upcoming {
+    background-color: rgba(218, 255, 4, 0.12);
+    color: var(--lime);
+}
+
+.booking-row-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spasi-2);
+    min-width: 140px;
+}
+
+@media (max-width: 600px) {
+    .booking-row-side {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .booking-row-side .tombol {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+.booking-row-price {
+    text-align: right;
+}
+
+.price-val {
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--lime);
+    display: block;
+}
+
+/* 7. Penanda "Punyamu" pada Sel Jadwal */
+.badge-punyamu {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: var(--radius-pil);
+    background-color: var(--putih);
+    color: var(--hitam);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Sel Kosong yang Dapat Diklik */
+a.slot-cell-kosong {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    display: flex;
+}
+
+a.slot-cell-kosong:hover,
+a.slot-cell-kosong:focus-visible {
+    outline: 2px solid var(--putih);
+    outline-offset: -2px;
+}
