@@ -42,6 +42,11 @@ class BookingSlot extends Model
         return $this->belongsTo(PlaySession::class, 'play_session_id');
     }
 
+    public function session(): BelongsTo
+    {
+        return $this->playSession();
+    }
+
     public function checkedInBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'checked_in_by');

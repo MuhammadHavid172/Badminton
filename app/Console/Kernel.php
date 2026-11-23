@@ -14,6 +14,9 @@ class Kernel extends ConsoleKernel
     {
         // Jalankan pembersihan hold booking kedaluwarsa setiap menit
         $schedule->command('bookings:expire')->everyMinute();
+
+        // Jalankan pemeriksaan notifikasi perpanjangan bulanan setiap jam
+        $schedule->command('bookings:notify-renewal')->hourly();
     }
 
     /**

@@ -239,5 +239,105 @@ class DemoSeeder extends Seeder
             'reason' => 'Perawatan rutin karpet & lampu (Contoh)',
             'created_by' => $admin->id,
         ]);
+
+        // 8. Demo Booking Bulanan: Terakhir Hari Ini (Pertemuan ke-4 berlangsung hari ini)
+        // Pastikan tidak tabrakan dengan slot yang ada
+        $todayStr = $now->toDateString();
+        $isSlotAvailable = !BookingSlot::where('court_id', $court2->id)
+            ->where('play_session_id', $session4->id)
+            ->where('play_date', $todayStr)
+            ->exists();
+
+        if ($isSlotAvailable) {
+            $bookingTerakhirHariIni = Booking::create([
+                'code' => Booking::generateCode(),
+                'user_id' => $customer->id,
+                'type' => BookingType::PACKAGE,
+                'status' => BookingStatus::PAID,
+                'total_price' => 600000,
+                'notes' => 'Contoh sewa Bulanan: Terakhir Hari Ini',
+                'created_by' => $customer->id,
+            ]);
+            Payment::create([
+                'booking_id' => $bookingTerakhirHariIni->id,
+                'method' => 'transfer',
+                'provider' => 'simulated',
+                'amount' => 600000,
+                'status' => PaymentStatus::PAID,
+                'reference' => 'SIM-' . $bookingTerakhirHariIni->code,
+                'paid_at' => now()->subDays(21),
+            ]);
+
+            $datesTerakhir = [
+                $now->copy()->subWeeks(3)->toDateString(),
+                $now->copy()->subWeeks(2)->toDateString(),
+                $now->copy()->subWeek()->toDateString(),
+                $todayStr, // Hari ini (pertemuan terakhir)
+            ];
+
+            foreach ($datesTerakhir as $index => $slotDate) {
+                // Hindari duplikasi jika slot tanggal lampau sudah dipakai
+                $slotExists = BookingSlot::where('court_id', $court2->id)
+                    ->where('play_session_id', $session4->id)
+                    ->where('play_date', $slotDate)
+                    ->exists();
+
+                if (!$slotExists) {
+                    BookingSlot::create([
+                        'booking_id' => $bookingTerakhirHariIni->id,
+                        'court_id' => $court2->id,
+                        'play_session_id' => $session4->id,
+                        'play_date' => $slotDate,
+                        'checked_in_at' => $index < 3 ? Carbon::parse($slotDate . ' 19:05:00') : null,
+                        'checked_in_by' => $index < 3 ? $admin->id : null,
+                    ]);
+                }
+            }
+        }
+
+        // 9. Demo Booking Bulanan: Baru Berakhir (Seluruh 4 sesi lampau, selesai kemarin/2 hari lalu)
+        $bookingBaruBerakhir = Booking::create([
+            'code' => Booking::generateCode(),
+            'user_id' => $customer2->id,
+            'type' => BookingType::PACKAGE,
+            'status' => BookingStatus::PAID,
+            'total_price' => 600000,
+            'notes' => 'Contoh sewa Bulanan: Baru Berakhir',
+            'created_by' => $customer2->id,
+        ]);
+        Payment::create([
+            'booking_id' => $bookingBaruBerakhir->id,
+            'method' => 'transfer',
+            'provider' => 'simulated',
+            'amount' => 600000,
+            'status' => PaymentStatus::PAID,
+            'reference' => 'SIM-' . $bookingBaruBerakhir->code,
+            'paid_at' => now()->subDays(30),
+        ]);
+
+        $datesBerakhir = [
+            $now->copy()->subDays(23)->toDateString(),
+            $now->copy()->subDays(16)->toDateString(),
+            $now->copy()->subDays(9)->toDateString(),
+            $now->copy()->subDays(2)->toDateString(), // 2 hari lalu (selesai)
+        ];
+
+        foreach ($datesBerakhir as $index => $slotDate) {
+            $slotExists = BookingSlot::where('court_id', $court3->id)
+                ->where('play_session_id', $session2->id)
+                ->where('play_date', $slotDate)
+                ->exists();
+
+            if (!$slotExists) {
+                BookingSlot::create([
+                    'booking_id' => $bookingBaruBerakhir->id,
+                    'court_id' => $court3->id,
+                    'play_session_id' => $session2->id,
+                    'play_date' => $slotDate,
+                    'checked_in_at' => Carbon::parse($slotDate . ' 11:15:00'),
+                    'checked_in_by' => $admin->id,
+                ]);
+            }
+        }
     }
 }

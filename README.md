@@ -13,10 +13,10 @@ Sistem dikembangkan bertahap sesuai acuan dokumen spesifikasi [docs/SPEK.md](doc
 - [x] **Fase 2**: Jadwal Publik (`/jadwal`)
 - [x] **Fase 3**: Otentikasi & Akun (`/masuk`, `/daftar`, Profil)
 - [x] **Fase 4**: Alur Booking Pengguna (Harian & Bulanan)
-- [ ] **Fase 5**: Operasional Lapangan & Admin Lapangan
-- [ ] **Fase 6**: Manajemen Admin & Pengaturan
-- [ ] **Fase 7**: Mode Pantau Pemilik (*Owner*)
-- [ ] **Fase 8**: Hardening, Audit & Integrasi Akhir
+- [x] **Fase 5**: Pembayaran, Perpanjang Bulanan, & Peringatan
+- [ ] **Fase 6**: Admin Operasional (Area `/admin`, Check-in, Jatah Habis, Booking Langsung)
+- [ ] **Fase 7**: Admin Manajemen & Mode Pantau Owner (`/owner`)
+- [ ] **Fase 8**: Poles, Keamanan, & Deploy
 
 ---
 
@@ -173,7 +173,57 @@ Mengikuti aturan ketat [docs/DESIGN.md](docs/DESIGN.md):
 
 ---
 
-## 6. Akun Demo & Data Awal (Lingkungan Lokal)
+## 6. Pembayaran, Perpanjang Bulanan, & Peringatan (Fase 5)
+
+### A. Gateway Pembayaran & Halaman Bayar
+- **Interface & Driver `App\Contracts\PaymentGateway`**:
+  - Diimplementasikan oleh `App\Services\Payment\SimulatedGateway` yang dipilih melalui `config('gor.payment_driver')`.
+  - Berhasil membayar: transaksi database atomik dengan pesimistik lock (`lockForUpdate`), idempoten, mengupdate `payments` dan `bookings` menjadi `paid`.
+  - Mengabaikan/menolak booking yang sudah kedaluwarsa atau dibatalkan.
+  - Tombol uji sementara Fase 4 ("Simulasi lunas") telah dihapus dari seluruh tampilan.
+- **Halaman Pembayaran `/booking/{code}/bayar`**:
+  - Menampilkan ringkasan sewa, total tagihan besar, dan hitung mundur waktu tahan.
+  - Banner jelas: `"MODE SIMULASI: tidak ada uang yang dipindahkan"`.
+  - **QR Pembayaran Simulasi**: Komponen `<x-qr-simulasi>` murni SVG yang digenerate terdeterminasi dari kode booking dengan label tegas `SIMULASI` di tengah matriks (bukan QR sungguhan dan tanpa pustaka pihak ketiga).
+  - Aksi: Tombol "Simulasikan pembayaran berhasil" dan "Simulasikan gagal" (mencatat percobaan gagal namun booking tetap pending untuk dicoba lagi).
+- **Perlindungan Lingkungan Produksi**:
+  - Jika `APP_ENV=production` dan `payment_driver=simulated`, sistem memicu log peringatan saat boot aplikasi (`AppServiceProvider`) serta menampilkan banner permanen `MODE UJI` di halaman pembayaran dan footer situs.
+
+### B. Bukti Booking & Cetak PDF
+- Tiket lunas pada `/booking/{code}` menyajikan rincian lengkap pertemuan, kode booking besar monospace, waktu pembayaran terverifikasi WIT, serta riwayat percobaan transaksi.
+- Dilengkapi stylesheet `@media print` sehingga pengguna dapat mencetak slip tiket atau menyimpannya langsung sebagai file PDF dari browser melalui tombol "Cetak Tiket / Simpan PDF".
+
+### C. Siklus Bulanan & Perpanjangan (Siapa Cepat Dia Dapat)
+- **Kemajuan Visual di UI**:
+  - Menampilkan teks progres "Pertemuan X dari 4" dan indikator visual batang kemajuan 4 kotak datar.
+  - Chip state siklus: `Aktif`, `Hampir Habis` (sisa <= 1 pertemuan), `Terakhir Hari Ini`, `Sudah Lanjut`, `Perpanjangan Menunggu Bayar`, dan `Selesai`.
+  - Banner tipis (*dismissable*) pada halaman `/booking` untuk mengingatkan pemilik sewa Bulanan yang hampir habis atau terakhir hari ini.
+- **Mekanisme Perpanjangan**:
+  - Tombol "Lanjutkan Sewa Bulanan" muncul saat sisa pertemuan <= `settings.renew_notice_remaining` (1) dan >= 1.
+  - Aturan: **Siapa cepat dia dapat** (tanpa masa prioritas atau pencadangan slot).
+  - Menghasilkan booking Bulanan baru dengan 4 tanggal lanjutan (+7, +14, +21, +28 hari dari tanggal terakhir), kolom `renewed_from_id` terisi, dan snapshot harga terbaru.
+- **Layanan Alternatif `RenewalAlternatives`**:
+  - Jika keempat tanggal lanjutan bentrok (terisi atau diblokir), sistem menampilkan tanggal bentrok dan mencarikan alternatif:
+    1. **Alternatif (a)**: Lapangan lain di sesi dan hari yang sama yang kosong 4 minggu berturut-turut.
+    2. **Alternatif (b)**: Sesi lain di lapangan dan hari yang sama yang kosong 4 minggu berturut-turut.
+  - Pemesan dapat memilih opsi alternatif untuk membuat booking lanjutan, atau disajikan pesan jujur dan tautan jadwal jika tidak ada alternatif yang tersedia.
+
+### D. Sistem Notifikasi Dalam Aplikasi (*In-App Database Notifications*)
+- Notifikasi idempoten tersimpan di database untuk 5 kejadian penting:
+  1. **Pembayaran Berhasil**: Diterima langsung saat konfirmasi pembayaran.
+  2. **Jatah Hampir Habis**: Dikirim sekali per booking saat sisa pertemuan <= 1 (dikunci via `renewal_notified_at`).
+  3. **Terakhir Hari Ini**: Dikirim sekali per booking sejak jam `settings.last_day_notice_hour` (jam 6 pagi WIT) (dikunci via `last_day_notified_at`).
+  4. **Masa Sewa Berakhir**: Dikirim saat seluruh sesi telah selesai dengan pesan adaptif apakah slot minggu berikutnya masih kosong atau telah diambil orang lain (dikunci via `ended_notified_at`).
+  5. **Waktu Pembayaran Habis**: Dikirim saat booking pending payment kedaluwarsa.
+- **Command Scheduler `bookings:notify-renewal`**:
+  - Berjalan setiap jam melalui scheduler Laravel (`php artisan schedule:work`). Tidak mengirim notifikasi untuk booking yang sudah diperpanjang (`sudah_lanjut`) atau dibatalkan.
+- **Antarmuka Notifikasi**:
+  - Navbar: Tautan "Notifikasi" dengan angka belum dibaca berupa teks monospace DM Mono kecil (bukan lencana bulat merah).
+  - Halaman `/notifikasi`: Daftar baris notifikasi (item belum dibaca bergaris tebal limau di kiri) dengan tombol "Tandai Semua Dibaca".
+
+---
+
+## 7. Akun Demo & Data Awal (Lingkungan Lokal)
 
 Saat menjalankan `php artisan migrate:fresh --seed` pada `APP_ENV=local`:
 
@@ -184,16 +234,18 @@ Saat menjalankan `php artisan migrate:fresh --seed` pada `APP_ENV=local`:
 | **Owner** | `081100000004` | `password` | Pemilik GOR (Mode Pantau) |
 | **Customer 2** | `081100000005` | `password` | Ahmad Kurnia (PB Garuda) |
 
-Data transaksi demo untuk **Senin terdekat**:
+Data transaksi demo mencakup:
 1. **Harian Paid**: Lapangan 1, Sesi 1 (PB Rajawali) & Lapangan 2, Sesi 2 (PB Garuda).
-2. **Bulanan Paid (Sisa 1x Pertemuan)**: Lapangan 1, Sesi 4 (4 pertemuan berturut-turut, 3 lampau + 1 mendatang pada Senin ini).
-3. **Pending Payment Aktif**: Lapangan 2, Sesi 3 (berlaku hingga 12 menit ke depan).
-4. **Expired Booking**: Transaksi kedaluwarsa dengan slot yang telah dilepas.
-5. **Slot Block**: Lapangan 3, Sesi 1 ditutup untuk perawatan rutin karpet & lampu.
+2. **Bulanan Paid (Sisa 1x Pertemuan)**: Lapangan 1, Sesi 4 (4 pertemuan berturut-turut, 3 lampau + 1 mendatang).
+3. **Bulanan Paid (Terakhir Hari Ini)**: Lapangan 2, Sesi 4 (pertemuan ke-4 jatuh pada hari ini).
+4. **Bulanan Paid (Baru Berakhir)**: Lapangan 3, Sesi 2 (seluruh 4 sesi lampau, selesai 2 hari lalu).
+5. **Pending Payment Aktif**: Lapangan 2, Sesi 3 (berlaku hingga 12 menit ke depan).
+6. **Expired Booking**: Transaksi kedaluwarsa dengan slot yang telah dilepas.
+7. **Slot Block**: Lapangan 3, Sesi 1 ditutup untuk perawatan rutin karpet & lampu.
 
 ---
 
-## 7. Rute Aplikasi
+## 8. Rute Aplikasi
 
 | Rute | Metode | Middleware | Deskripsi | Status |
 | :--- | :--- | :--- | :--- | :--- |
@@ -204,9 +256,15 @@ Data transaksi demo untuk **Senin terdekat**:
 | `/booking/baru` | GET | `web` | Halaman form booking (Slip tiket draf, pilihan Harian/Bulanan, pendaftaran inline tamu) | 200 OK |
 | `/booking` | POST | `throttle:10,1` | Proses transaksi pembuatan booking baru (DB transaction + UNIQUE guard) | 302 Redirect |
 | `/booking` | GET | `auth` | Halaman "Booking Saya" (Menunggu Bayar, Akan Datang, Riwayat) | 200 OK |
-| `/booking/{code}` | GET | `auth` | Halaman detail tiket booking dengan hitung mundur waktu tahan | 200 OK |
+| `/booking/{code}` | GET | `auth` | Halaman detail tiket booking dengan bukti lunas & cetak PDF | 200 OK |
+| `/booking/{code}/bayar` | GET | `auth` | Halaman pembayaran simulasi dengan QR SVG SIMULASI & hitung mundur | 200 OK |
+| `/booking/{code}/bayar/proses` | POST | `auth` | Konfirmasi pembayaran berhasil secara aman & idempoten | 302 Redirect |
+| `/booking/{code}/bayar/gagal` | POST | `auth` | Simulasi pembayaran gagal (dapat dicoba ulang) | 302 Redirect |
+| `/booking/{code}/perpanjang` | POST | `auth` | Perpanjangan sewa Bulanan (+7 sd +28 hari) & alternatif bentrok | 302 / 200 |
 | `/booking/{code}/batal` | POST | `auth` | Pembatalan booking pending payment oleh pemesan | 302 Redirect |
-| `/booking/{code}/simulasi-lunas` | POST | `auth` | Tombol simulasi bayar lunas (Khusus `APP_ENV=local` Fase 4) | 302 Redirect |
+| `/notifikasi` | GET | `auth` | Halaman daftar notifikasi in-app pengguna | 200 OK |
+| `/notifikasi/baca-semua` | POST | `auth` | Tandai seluruh notifikasi telah dibaca | 302 Redirect |
+| `/notifikasi/{id}` | GET | `auth` | Tandai notifikasi spesifik dibaca dan buka detailnya | 302 Redirect |
 | `/masuk` | GET, POST | `guest` | Halaman & proses login (HP/Email + password) | 200 OK |
 | `/daftar` | GET, POST | `guest` | Halaman & proses pendaftaran customer baru | 200 OK |
 | `/keluar` | POST | `auth` | Proses logout pengguna & invalidasi sesi | 302 Redirect |
@@ -219,7 +277,7 @@ Data transaksi demo untuk **Senin terdekat**:
 
 ---
 
-## 8. Hasil Pengujian (PHPUnit)
+## 9. Hasil Pengujian (PHPUnit)
 
 Seluruh pengujian unit dan fitur berjalan otomatis:
 
@@ -228,6 +286,7 @@ php artisan test
 ```
 
 **Ringkasan Hasil Uji**:
+- `Tests\Feature\PaymentAndRenewalTest`: 11 pengujian lolos (pembayaran simulasi berhasil & notifikasi database, pembayaran idempoten, penolakan pembayaran booking expired/cancelled, pembayaran gagal lalu coba lagi, otorisasi hanya pemilik yang boleh bayar, visualisasi PackageLifecycle & chip state di UI, perpanjangan Bulanan sukses 4 tanggal & snapshot harga baru, penanganan bentrok perpanjangan & pemilihan alternatif lapangan/sesi, command scheduler `bookings:notify-renewal` idempoten tanpa duplikasi, banner permanen MODE UJI di environment production, halaman notifikasi & tandai semua dibaca).
 - `Tests\Feature\BookingTest`: 14 pengujian lolos (Harian 1 slot & snapshot harga, Bulanan 4 slot +7 hari, Bulanan ditolak jika ada tanggal bentrok beserta rincian tanggal, slot ditutup & sesi lewat ditolak, proteksi konkurensi database gagal ramah, pendaftaran ringkas tamu inline langsung booking, batas maksimal pending booking per user, command scheduler `bookings:expire` membersihkan hold tanpa menyentuh paid, pembatalan booking oleh pemesan membebaskan slot, otorisasi BookingPolicy, snapshot harga kebal perubahan setting, peran owner dilarang booking, tiga bagian Booking Saya, penanda "Punyamu" pada sel jadwal).
 - `Tests\Feature\AuthTest`: 13 pengujian lolos (normalisasi HP, registrasi, login HP & email, akun nonaktif, rate limit, redirect peran, intended URL, otorisasi 403, logout, artisan commands, ubah profil & password).
 - `Tests\Unit\PackageLifecycleTest`: 4 pengujian lolos (total pertemuan, sisa pertemuan zona Jayapura, penanda Sisa 1x & perpanjangan, state siklus).
@@ -236,9 +295,9 @@ php artisan test
 - `Tests\Feature\ScheduleServiceTest`: 6 pengujian lolos (prioritas ditutup, label PB/nama, hold kedaluwarsa = kosong, sesi lewat, query bounded bebas N+1).
 - `Tests\Feature\ScheduleControllerTest`: 6 pengujian lolos (tampilan hari 200, kalender 200, redirect tanggal tidak valid & di luar batas, API JSON bebas info privat).
 - `Tests\Feature\DatabaseSchemaTest`: 5 pengujian lolos (skema user & role, relasi court/session, UNIQUE constraint double-booking, setting cache get/set, activity logger).
-- `Tests\Feature\SeederTest`: 1 pengujian lolos (kepatuhan seeder terhadap config dinamis & data demo).
+- `Tests\Feature\SeederTest`: 1 pengujian lolos (kepatuhan seeder terhadap config dinamis & data demo lengkap).
 - `Tests\Feature\DesignRulesTest`: 6 pengujian lolos (bebas AI slop: anti kata "Anda", anti frasa "Sekali main" / "Paket bulanan" / "penjaga", anti klaim kosong, anti emoji, anti background-clip text, anti glow/bayangan berwarna, backdrop-filter terbatas pada navbar).
 - `Tests\Feature\LandingPageTest`: 9 pengujian lolos.
 - `Tests\Unit\ExampleTest` & `Tests\Feature\ExampleTest`: 2 pengujian lolos.
 
-**Total**: **73 Tests Passed (316 assertions)**, 100% hijau.
+**Total**: **84 Tests Passed (372 assertions)**, 100% hijau.

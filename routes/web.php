@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\ScheduleController;
 use App\Services\ScheduleService;
@@ -27,15 +28,24 @@ Route::get('/', function (ScheduleService $scheduleService) {
 // Halaman Publik: Jadwal Lapangan
 Route::get('/jadwal', [ScheduleController::class, 'index'])->name('jadwal');
 
-// Alur Booking (Fase 4)
+// Alur Booking & Pembayaran (Fase 4 & 5)
 Route::get('/booking/baru', [BookingController::class, 'create'])->name('booking.baru');
 Route::post('/booking', [BookingController::class, 'store'])->middleware('throttle:10,1')->name('booking.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/booking', [BookingController::class, 'myBookings'])->name('booking.saya');
     Route::get('/booking/{code}', [BookingController::class, 'show'])->name('booking.detail');
+    Route::get('/booking/{code}/bayar', [BookingController::class, 'pay'])->name('booking.bayar');
+    Route::post('/booking/{code}/bayar/proses', [BookingController::class, 'processPayment'])->name('booking.bayar.proses');
+    Route::post('/booking/{code}/bayar/gagal', [BookingController::class, 'failPayment'])->name('booking.bayar.gagal');
+    Route::post('/booking/{code}/perpanjang', [BookingController::class, 'perpanjang'])->name('booking.perpanjang');
     Route::post('/booking/{code}/batal', [BookingController::class, 'cancel'])->name('booking.batal');
     Route::post('/booking/{code}/simulasi-lunas', [BookingController::class, 'simulasiLunas'])->name('booking.simulasi-lunas');
+
+    // Notifikasi In-App (Fase 5)
+    Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifikasi.index');
+    Route::post('/notifikasi/baca-semua', [NotificationController::class, 'markAllAsRead'])->name('notifikasi.baca-semua');
+    Route::get('/notifikasi/{id}', [NotificationController::class, 'markAsRead'])->name('notifikasi.baca');
 });
 
 // Rute Tamu (Guest Only)

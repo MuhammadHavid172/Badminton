@@ -41,6 +41,10 @@ class BookingService
                 Payment::where('booking_id', $booking->id)
                     ->where('status', PaymentStatus::PENDING)
                     ->update(['status' => PaymentStatus::FAILED]);
+
+                if ($booking->user) {
+                    $booking->user->notify(new \App\Notifications\BookingExpiredNotification($booking));
+                }
             });
             $count++;
         }

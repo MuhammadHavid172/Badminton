@@ -48,7 +48,7 @@
             $lifecycle = $isPackagePaid ? new \App\Services\PackageLifecycle($booking) : null;
         @endphp
 
-        {{-- Siklus Paket Bulanan di UI --}}
+        {{-- Siklus Sewa Bulanan di UI --}}
         @if ($lifecycle)
             @php
                 $totalMeetings = $lifecycle->totalMeetings();

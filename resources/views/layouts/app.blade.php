@@ -37,6 +37,16 @@
                         <a href="{{ route('masuk') }}" class="link-masuk">Masuk</a>
                         <a href="{{ route('daftar') }}" class="tombol tombol-solid">Daftar</a>
                     @else
+                        @php
+                            $unreadNotifCount = auth()->user()->unreadNotifications()->count();
+                        @endphp
+                        <a href="{{ route('notifikasi.index') }}" class="nav-notif-link" aria-label="Notifikasi ({{ $unreadNotifCount }} belum dibaca)">
+                            <span>Notifikasi</span>
+                            @if ($unreadNotifCount > 0)
+                                <span class="notif-count-mono">{{ $unreadNotifCount }}</span>
+                            @endif
+                        </a>
+
                         <div class="user-menu-wrapper" id="user-menu-container">
                             <button
                                 type="button"
@@ -118,6 +128,15 @@
                     <a href="{{ route('masuk') }}" class="tombol tombol-sekunder" style="width: 100%;">Masuk</a>
                     <a href="{{ route('daftar') }}" class="tombol tombol-solid" style="width: 100%;">Daftar</a>
                 @else
+                    @php
+                        $unreadMobileNotif = auth()->user()->unreadNotifications()->count();
+                    @endphp
+                    <a href="{{ route('notifikasi.index') }}" class="tombol tombol-sekunder" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                        <span>Notifikasi</span>
+                        @if ($unreadMobileNotif > 0)
+                            <span class="notif-count-mono">{{ $unreadMobileNotif }}</span>
+                        @endif
+                    </a>
                     <a href="{{ route('booking.saya') }}" class="tombol tombol-solid" style="width: 100%;">
                         Booking Saya
                     </a>
@@ -218,6 +237,12 @@
                     @endif
                 </div>
             </div>
+
+            @if (app()->environment('production') && config('gor.payment_driver') === 'simulated')
+                <div style="margin-top: var(--spasi-6); padding: var(--spasi-3) var(--spasi-4); background-color: #26200A; border: 1px solid #FFB020; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 0.8125rem; color: #FFB020; text-align: center;">
+                    MODE UJI &middot; GATEWAY PEMBAYARAN SIMULASI AKTIF
+                </div>
+            @endif
 
             <div class="footer-bottom">
                 <p>&copy; {{ date('Y') }} {{ config('gor.name') }}. Seluruh hak cipta dilindungi.</p>

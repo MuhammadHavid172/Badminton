@@ -2741,3 +2741,253 @@ a.slot-cell-kosong:focus-visible {
     outline: 2px solid var(--putih);
     outline-offset: -2px;
 }
+
+/* ==========================================================================
+   FASE 5: PEMBAYARAN, SIKLUS BULANAN, NOTIFIKASI, & CETAK TIKET
+   ========================================================================== */
+
+/* 1. Tautan Notifikasi di Navbar & Monospace Unread Count (Bukan Bulatan Merah) */
+.nav-notif-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: var(--putih);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: var(--radius-pil);
+    transition: color var(--transisi-cepat), background-color var(--transisi-cepat);
+}
+
+.nav-notif-link:hover,
+.nav-notif-link:focus-visible {
+    color: var(--lime);
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.notif-count-mono {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--hitam);
+    background-color: var(--lime);
+    padding: 1px 6px;
+    border-radius: var(--radius-pil);
+    line-height: 1.2;
+}
+
+/* 2. Daftar Notifikasi In-App */
+.notifikasi-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spasi-3);
+}
+
+.notifikasi-item {
+    background-color: #171714;
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-sm);
+    padding: var(--spasi-4);
+    transition: border-color var(--transisi-cepat);
+}
+
+.notifikasi-item.is-unread {
+    border-left: 3px solid var(--lime);
+    background-color: rgba(218, 255, 4, 0.02);
+}
+
+.notifikasi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--spasi-2);
+    margin-bottom: var(--spasi-1);
+    flex-wrap: wrap;
+}
+
+.notifikasi-title {
+    font-family: var(--font-judul);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--putih);
+}
+
+.notifikasi-time {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--teks-redup);
+}
+
+.notifikasi-message {
+    font-size: 0.875rem;
+    color: var(--teks-redup);
+    line-height: 1.5;
+    margin: 4px 0 0 0;
+}
+
+.notifikasi-link {
+    font-size: 0.8125rem;
+    color: var(--lime);
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* 3. Chip State Siklus Bulanan */
+.chip-state {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: var(--radius-pil);
+}
+
+.chip-state-normal {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--putih);
+    border: 1px solid var(--garis);
+}
+
+.chip-state-urgent {
+    background-color: #382A08;
+    color: #FFB020;
+    border: 1px solid #FFB020;
+}
+
+.chip-state-warning {
+    background-color: rgba(255, 176, 32, 0.15);
+    color: #FFB020;
+    border: 1px solid rgba(255, 176, 32, 0.4);
+}
+
+.chip-state-success {
+    background-color: rgba(218, 255, 4, 0.12);
+    color: var(--lime);
+    border: 1px solid var(--lime);
+}
+
+.chip-state-dim {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--teks-redup);
+    border: 1px solid var(--garis);
+}
+
+/* 4. Batang Kemajuan 4 Kotak Datar Siklus Bulanan */
+.package-progress-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spasi-2);
+    margin-top: var(--spasi-3);
+}
+
+.progress-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    background-color: #1A1A17;
+    border: 1px solid var(--garis);
+    border-radius: var(--radius-sm);
+    text-align: center;
+}
+
+.progress-box-num {
+    font-family: var(--font-mono);
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.progress-box-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    color: var(--teks-redup);
+    margin-top: 4px;
+}
+
+.progress-box.is-completed {
+    background-color: var(--lime);
+    border-color: var(--lime);
+    color: var(--hitam);
+}
+
+.progress-box.is-completed .progress-box-label {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.progress-box.is-current {
+    border-color: var(--lime);
+    color: var(--lime);
+    background-color: rgba(218, 255, 4, 0.05);
+}
+
+.package-progress-bar-small {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    height: 6px;
+}
+
+.progress-box-small {
+    height: 100%;
+    background-color: #2E2E28;
+    border-radius: 2px;
+}
+
+.progress-box-small.is-completed {
+    background-color: var(--lime);
+}
+
+.progress-box-small.is-current {
+    background-color: #FFB020;
+}
+
+/* 5. Stylesheet Cetak Tiket & PDF */
+@media print {
+    body {
+        background-color: #FFFFFF !important;
+        color: #1A1A18 !important;
+    }
+
+    .no-print,
+    .site-header,
+    .site-footer,
+    .mobile-menu,
+    .tombol,
+    .countdown-card,
+    .alert-box,
+    .booking-section-box:has(.package-progress-bar) {
+        display: none !important;
+    }
+
+    .kontainer {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .slip-tiket {
+        border: 2px dashed #000000 !important;
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 24px !important;
+        page-break-inside: avoid;
+    }
+
+    .slip-tiket-kode {
+        color: #000000 !important;
+    }
+
+    .slip-tiket-val {
+        color: #000000 !important;
+    }
+}
