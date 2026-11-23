@@ -15,7 +15,7 @@ Sistem dikembangkan bertahap sesuai acuan dokumen spesifikasi [docs/SPEK.md](doc
 - [x] **Fase 4**: Alur Booking Pengguna (Harian & Bulanan)
 - [x] **Fase 5**: Pembayaran, Perpanjang Bulanan, & Peringatan
 - [x] **Fase 6**: Admin Operasional (Area `/admin`, Check-in, Jatah Habis, Booking Langsung)
-- [ ] **Fase 7**: Admin Manajemen & Mode Pantau Owner (`/owner`)
+- [x] **Fase 7**: Admin Manajemen & Mode Pantau Owner (`/owner`)
 - [ ] **Fase 8**: Poles, Keamanan, & Deploy
 
 ---
@@ -289,7 +289,83 @@ Admin menggabungkan fungsi penjaga lapangan dan administrator operasional:
 
 ---
 
-## 8. Akun Demo & Data Awal (Lingkungan Lokal)
+## 8. Admin Manajemen & Mode Pantau Owner (Fase 7)
+
+### A. Dashboard Ringkasan & Grafik Okupansi (`/admin/ringkasan`)
+- **Baris Tipografis Raksasa (Tanpa Grid Kartu KPI Berikon)**:
+  - Angka metrik ditampilkan dalam satu baris tipografi horizontal besar yang dipisahkan oleh garis vertikal tipis:
+    - **Pendapatan Hari Ini & Bulan Ini**: Dihitung dari transaksi pembayaran berstatus `paid` berdasarkan stempel waktu `paid_at` di zona waktu Asia/Jayapura (WIT).
+    - **Jumlah Booking Hari Ini**: Total booking baru dibuat hari ini di zona Jayapura.
+    - **Persentase Okupansi Hari Ini**: Dihitung dari slot aktif terisi (paid, pending valid, dan slot ditutup) dibagi total kapasitas harian (`total lapangan x total sesi`).
+    - **Booking Menunggu Bayar**: Jumlah booking `pending_payment` yang masih dalam masa penahanan aktif.
+  - Menerapkan prinsip *Honest Empty State* tanpa kartu KPI berglow atau angka palsu.
+- **Grafik Batang Okupansi 29 Hari (SVG Murni Responsif)**:
+  - Rentang 29 hari: 14 hari ke belakang, hari ini, dan 14 hari ke depan.
+  - Dibangun dengan markup `<svg>` murni tanpa dependensi pustaka grafik pihak ketiga (Chart.js / ApexCharts).
+  - Batang hari ini diberi aksen limau khas (`#DAFF04`), hari lampau berlatar abu redup (`#2A2A25`), dan hari mendatang berbingkai abu garis tipis (`#3A3A35`).
+- **Daftar Kritis & Penutupan Slot**:
+  - Daftar jatah Bulanan hampir habis (sisa <= 1 pertemuan) untuk segera ditindaklanjuti.
+  - Daftar penutupan slot pemeliharaan yang akan datang.
+
+### B. Manajemen Pengguna (`/admin/pengguna`)
+- **Daftar & Filter Pengguna**:
+  - Tabel ringkas responsif (berubah menjadi kartu bertumpuk label-nilai di mobile) dengan pencarian teks (nama, nomor HP, email, PB/tim) dan filter peran (`admin`, `owner`, `customer`) serta status (`aktif`, `nonaktif`).
+- **Pendaftaran Pengguna Baru oleh Admin**:
+  - Form tambah pengguna untuk membuat akun admin, owner, atau customer baru secara cepat.
+  - Normalisasi otomatis nomor HP dan pencatatan audit log `user.created`.
+- **Detail Pengguna & Riwayat Booking (`/admin/pengguna/{id}`)**:
+  - Menampilkan profil lengkap, status akun, dan seluruh riwayat transaksi booking beserta status pertemuan.
+- **Proteksi Tingkat Tinggi Manajemen Akun**:
+  - **Anti Self-Demotion**: Admin tidak dapat menurunkan perannya sendiri dari admin.
+  - **Anti Self-Deactivation**: Admin tidak dapat menonaktifkan akunnya sendiri.
+  - **Anti Zero-Admin**: Sistem menolak deaktivasi atau penurunan peran jika hanya tersisa 1 admin aktif di sistem (owner tidak dihitung).
+  - **Konfirmasi Password Admin**: Seluruh tindakan sensitif (ubah peran, aktifkan/nonaktifkan, dan reset password) mewajibkan verifikasi password admin yang sedang login.
+  - **Atur Ulang Password**: Admin dapat mereset password pengguna dengan password baru kustom atau otomatis acak, dengan pemberitahuan password sementara via flash message dan audit log `user.password_reset`.
+
+### C. Log Aktivitas Sistem (`/admin/aktivitas`)
+- **Pencatatan Riwayat Komprehensif**:
+  - Tabel riwayat log aktivitas terbaru di posisi paling atas dengan stempel waktu zona Asia/Jayapura (WIT).
+  - Filter pencarian jenis aksi (`action`), peran pelaku (`role`), dan rentang tanggal (`dari` s.d. `sampai`).
+  - Modal/toggle inspeksi metadata JSON untuk melihat detail teknis tiap aksi audit.
+
+### D. Laporan Keuangan & Operasional (`/admin/laporan`)
+- **Metrik Laporan Terpadu**:
+  - Pemfilteran rentang tanggal kustom (bawaan 30 hari terakhir).
+  - Total pendapatan riil dari pembayaran `paid` dalam rentang tanggal terpilih.
+  - Jumlah booking per kategori (`Harian` vs `Bulanan`).
+  - Rincian penerimaan per metode bayar (`simulated`, `tunai`, dll).
+  - **Tingkat Perpanjangan Bulanan (Renewal Rate)**: Menghitung jumlah sewa Bulanan yang berakhir dalam rentang waktu, jumlah yang telah diperpanjang (berdasarkan `renewed_from_id`), persentase tingkat perpanjangan, serta daftar transparan pelanggan Bulanan yang tidak memperpanjang.
+- **Ekspor CSV Laporan Transaksi Aman**:
+  - Ekspor stream CSV laporan transaksi keuangan (`/admin/laporan/ekspor-csv`).
+  - Seluruh nilai sel berpotensi formula injection (`=`, `+`, `-`, `@`) otomatis diawali tanda petik tunggal (`'`).
+  - Ekspor tercatat secara transparan di `activity_logs` (`laporan.csv_export`).
+
+### E. Pengaturan Operasional (`/admin/pengaturan`)
+- Pengaturan parameter dinamis sistem via antarmuka admin:
+  - Harga Harian (`price_single`) & Harga Bulanan (`price_package`).
+  - Waktu tahan booking menunggu bayar (`hold_minutes`).
+  - Batas maksimal booking pending per pengguna (`max_pending_bookings`).
+  - Ambang batas pengingat sisa pertemuan Bulanan (`renew_notice_remaining`).
+  - Jam pengiriman notifikasi hari terakhir Bulanan (`last_day_notice_hour`).
+- **Keamanan & Konsistensi**:
+  - Mewajibkan konfirmasi password admin untuk menyimpan perubahan.
+  - Perubahan harga dan masa tahan hanya berlaku untuk booking baru ke depan (snapshot harga lama tetap aman).
+  - Mencatat nilai sebelum (*old*) dan sesudah (*new*) ke dalam audit log `setting.updated`.
+
+### F. Mode Pantau Owner (`/owner`)
+- **Prinsip Read-Only Penuh**:
+  - Area `/owner` mencerminkan seluruh halaman admin untuk operasi lihat/pantau saja (GET).
+  - Memakai ulang view admin dengan flag `$modePantau = true`: seluruh tombol aksi, tombol presensi check-in, form pembatalan, form booking langsung, form penutupan slot, dan form ubah pengaturan **TIDAK DIRENDER**.
+  - Badge navbar menampilkan chip tegas: `OWNER · MODE PANTAU`.
+- **Penegakan Hak Akses Server-Side**:
+  - Owner dilarang keras mengakses area `/admin/*` (HTTP 403 Forbidden).
+  - Owner dilarang keras melakukan aksi mutasi apapun (HTTP 403 Forbidden).
+  - Customer dilarang keras mengakses `/admin/*` maupun `/owner/*` (HTTP 403 Forbidden).
+  - Halaman pengaturan owner menampilkan parameter sistem dalam format kartu teks statis yang informatif tanpa form input.
+
+---
+
+## 9. Akun Demo & Data Awal (Lingkungan Lokal)
 
 Saat menjalankan `php artisan migrate:fresh --seed` pada `APP_ENV=local`:
 
@@ -311,7 +387,7 @@ Data transaksi demo mencakup:
 
 ---
 
-## 9. Rute Aplikasi
+## 10. Rute Aplikasi
 
 | Rute | Metode | Middleware | Deskripsi | Status |
 | :--- | :--- | :--- | :--- | :--- |
@@ -338,6 +414,7 @@ Data transaksi demo mencakup:
 | `/akun/profil` | PUT | `auth` | Proses pembaruan nama, email, dan nama tim | 302 Redirect |
 | `/akun/password` | PUT | `auth` | Proses ubah password dengan verifikasi password lama | 302 Redirect |
 | `/admin` | GET | `auth`, `role:admin` | Landing Admin "Hari Ini" (daftar sesi, presensi 48px, search) | 200 OK |
+| `/admin/ringkasan` | GET | `auth`, `role:admin` | Ringkasan angka besar tipografis & grafik okupansi 29 hari SVG | 200 OK |
 | `/admin/slot/{id}/check-in` | POST | `auth`, `role:admin` | Pencatatan presensi kehadiran pelanggan per slot | 302 Redirect |
 | `/admin/slot/{id}/batal-check-in` | POST | `auth`, `role:admin` | Pembatalan pencatatan kehadiran slot | 302 Redirect |
 | `/admin/booking/{code}` | GET | `auth`, `role:admin` | Detail booking operasional, riwayat pembayaran, & presensi | 200 OK |
@@ -351,12 +428,34 @@ Data transaksi demo mencakup:
 | `/admin/tutup-slot/{id}` | DELETE | `auth`, `role:admin` | Buka kembali slot yang ditutup | 302 Redirect |
 | `/admin/booking` | GET | `auth`, `role:admin` | Daftar semua booking dengan filter lengkap & responsif mobile | 200 OK |
 | `/admin/booking/ekspor-csv` | GET | `auth`, `role:admin` | Ekspor CSV aman dari CSV Injection sesuai filter aktif | 200 Stream |
-| `/owner` | GET | `auth`, `role:owner` | Kerangka Mode Pantau Owner (Siap untuk Fase 7) | 200 OK |
+| `/admin/pengguna` | GET | `auth`, `role:admin` | Manajemen akun: daftar pengguna, filter peran, & tambah akun | 200 OK |
+| `/admin/pengguna` | POST | `auth`, `role:admin` | Simpan akun pengguna baru (admin, owner, customer) | 302 Redirect |
+| `/admin/pengguna/{id}` | GET | `auth`, `role:admin` | Detail pengguna, riwayat transaksi booking, & panel kelola akun | 200 OK |
+| `/admin/pengguna/{id}/peran` | PUT | `auth`, `role:admin` | Ubah peran pengguna (wajib konfirmasi password admin) | 302 Redirect |
+| `/admin/pengguna/{id}/toggle-status` | PUT | `auth`, `role:admin` | Aktifkan/nonaktifkan akun (wajib konfirmasi password admin) | 302 Redirect |
+| `/admin/pengguna/{id}/reset-password` | POST | `auth`, `role:admin` | Reset password akun pengguna (wajib konfirmasi password admin) | 302 Redirect |
+| `/admin/aktivitas` | GET | `auth`, `role:admin` | Log audit aktivitas sistem lengkap (filter aksi, peran, tanggal) | 200 OK |
+| `/admin/laporan` | GET | `auth`, `role:admin` | Laporan pendapatan, kategori, metode bayar, & renewal rate | 200 OK |
+| `/admin/laporan/ekspor-csv` | GET | `auth`, `role:admin` | Ekspor CSV transaksi laporan aman dari formula injection | 200 Stream |
+| `/admin/pengaturan` | GET | `auth`, `role:admin` | Pengaturan harga, masa tahan bayar, batas booking, notifikasi | 200 OK |
+| `/admin/pengaturan` | PUT | `auth`, `role:admin` | Simpan perubahan parameter sistem (wajib konfirmasi password) | 302 Redirect |
+| `/owner` | GET | `auth`, `role:owner` | Landing Owner = Ringkasan Eksekutif Mode Pantau | 200 OK |
+| `/owner/ringkasan` | GET | `auth`, `role:owner` | Ringkasan angka besar tipografis & grafik okupansi 29 hari SVG | 200 OK |
+| `/owner/hari-ini` | GET | `auth`, `role:owner` | Mode pantau jadwal hari ini (tanpa tombol check-in/mutasi) | 200 OK |
+| `/owner/jatah-habis` | GET | `auth`, `role:owner` | Mode pantau sewa Bulanan kritis (tanpa tombol perpanjang) | 200 OK |
+| `/owner/booking` | GET | `auth`, `role:owner` | Mode pantau daftar booking seluruh pelanggan | 200 OK |
+| `/owner/booking/{code}` | GET | `auth`, `role:owner` | Mode pantau detail booking (tanpa form pembatalan) | 200 OK |
+| `/owner/pengguna` | GET | `auth`, `role:owner` | Mode pantau daftar akun (tanpa form tambah akun) | 200 OK |
+| `/owner/pengguna/{id}` | GET | `auth`, `role:owner` | Mode pantau riwayat akun (tanpa tombol kelola/reset) | 200 OK |
+| `/owner/aktivitas` | GET | `auth`, `role:owner` | Mode pantau log aktivitas sistem | 200 OK |
+| `/owner/laporan` | GET | `auth`, `role:owner` | Mode pantau laporan operasional, keuangan, & renewal rate | 200 OK |
+| `/owner/laporan/ekspor-csv` | GET | `auth`, `role:owner` | Ekspor CSV laporan transaksi keuangan oleh owner | 200 Stream |
+| `/owner/pengaturan` | GET | `auth`, `role:owner` | Mode pantau parameter pengaturan sistem (teks statis) | 200 OK |
 | `/dev/komponen` | GET | `web` | Katalog komponen visual (Hanya aktif di `APP_ENV=local`) | 200 OK |
 
 ---
 
-## 10. Hasil Pengujian (PHPUnit)
+## 11. Hasil Pengujian (PHPUnit)
 
 Seluruh pengujian unit dan fitur berjalan otomatis:
 
@@ -365,6 +464,7 @@ php artisan test
 ```
 
 **Ringkasan Hasil Uji**:
+- `Tests\Feature\AdminManagementAndOwnerTest`: 10 pengujian lolos (matriks hak akses 3 peran dan audit rute lengkap, larangan 403 bagi owner untuk semua aksi mutasi dan larangan akses area `/admin/*`, larangan 403 bagi customer untuk area admin dan owner, penegakan mode pantau view bebas tombol dan form mutasi, chip `OWNER · MODE PANTAU` di navbar, proteksi anti-self demotion dan anti-self deactivation admin, proteksi anti zero-admin aktif, penambahan pengguna baru dengan normalisasi nomor HP dan audit log, pengubahan peran pengguna dan reset password dengan verifikasi password admin, perhitungan ringkasan pendapatan zona Jayapura dan grafik batang okupansi 29 hari SVG murni, laporan rasio perpanjangan bulanan terhitung akurat, ekspor stream CSV kebal formula injection dengan prefix tanda petik tunggal dan audit log, update pengaturan operasional dengan verifikasi password admin dan audit log old vs new).
 - `Tests\Feature\AdminTest`: 11 pengujian lolos (kontrol akses admin murni & larangan bagi customer/owner, presensi check-in dan pembatalan check-in idempoten dengan catatan kehadiran & activity log, pencarian multi-kriteria kode/nama/tim/HP, daftar jatah habis Bulanan kritis dengan akses nomor HP aman dan proteksi endpoint publik bebas HP, perpanjangan sewa Bulanan atas nama metode tunai lunas & tahan dulu, booking langsung di tempat dengan registrasi otomatis pelanggan baru & lunas kasir, penutupan slot pemeliharaan & penolakan anti-bentrok jika ada booking aktif, pembatalan booking admin dengan pelepasan slot masa depan & penyimpanan riwayat slot lampau serta notifikasi, konfirmasi password admin untuk pembatalan booking berbayar, ekspor stream CSV kebal formula injection dengan prefix petik tunggal & pencatatan log, pemaksaan logout EnforceIdleTimeout untuk sesi admin/owner yang tidak aktif melebihi batas konfigurasi).
 - `Tests\Feature\PaymentAndRenewalTest`: 11 pengujian lolos (pembayaran simulasi berhasil & notifikasi database, pembayaran idempoten, penolakan pembayaran booking expired/cancelled, pembayaran gagal lalu coba lagi, otorisasi hanya pemilik yang boleh bayar, visualisasi PackageLifecycle & chip state di UI, perpanjangan Bulanan sukses 4 tanggal & snapshot harga baru, penanganan bentrok perpanjangan & pemilihan alternatif lapangan/sesi, command scheduler `bookings:notify-renewal` idempoten tanpa duplikasi, banner permanen MODE UJI di environment production, halaman notifikasi & tandai semua dibaca).
 - `Tests\Feature\BookingTest`: 14 pengujian lolos (Harian 1 slot & snapshot harga, Bulanan 4 slot +7 hari, Bulanan ditolak jika ada tanggal bentrok beserta rincian tanggal, slot ditutup & sesi lewat ditolak, proteksi konkurensi database gagal ramah, pendaftaran ringkas tamu inline langsung booking, batas maksimal pending booking per user, command scheduler `bookings:expire` membersihkan hold tanpa menyentuh paid, pembatalan booking oleh pemesan membebaskan slot, otorisasi BookingPolicy, snapshot harga kebal perubahan setting, peran owner dilarang booking, tiga bagian Booking Saya, penanda "Punyamu" pada sel jadwal).
@@ -380,4 +480,4 @@ php artisan test
 - `Tests\Feature\LandingPageTest`: 9 pengujian lolos.
 - `Tests\Unit\ExampleTest` & `Tests\Feature\ExampleTest`: 2 pengujian lolos.
 
-**Total**: **95 Tests Passed (456 assertions)**, 100% hijau.
+**Total**: **105 Tests Passed (568 assertions)**, 100% hijau.
