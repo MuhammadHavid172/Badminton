@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\PaymentGateway;
 use App\Services\Payment\SimulatedGateway;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,6 +29,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Cegah N+1 queries pada environment lokal dan testing
+        Model::preventLazyLoading(!app()->isProduction());
+
         // Peringatan jika di lingkungan production tetapi driver pembayaran masih simulated
         if (app()->environment('production') && config('gor.payment_driver') === 'simulated') {
             Log::warning('PERINGATAN: Gateway pembayaran berjalan dalam mode simulasi (simulated) di lingkungan produksi!');

@@ -31,6 +31,12 @@ body {
     overflow-x: hidden;
 }
 
+input,
+select,
+textarea {
+    font-size: 1rem; /* minimal 16px untuk mencegah iOS auto-zoom */
+}
+
 /* Tautan Lompat ke Konten (Aksesibilitas) */
 .skip-link {
     position: absolute;
