@@ -71,7 +71,7 @@
             </div>
 
             <p style="font-size: 0.8125rem; color: var(--teks-redup); margin-top: var(--spasi-3); line-height: 1.5;">
-                Slot akan ditahan selama {{ Setting::getInt('hold_minutes', 15) }} menit setelah tombol booking ditekan untuk memberi waktu pembayaran.
+                Slot akan ditahan selama {{ \App\Models\Setting::getInt('hold_minutes', 15) }} menit setelah tombol booking ditekan untuk memberi waktu pembayaran.
             </p>
         </div>
 

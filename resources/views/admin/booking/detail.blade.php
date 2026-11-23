@@ -45,9 +45,9 @@
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--spasi-3); border-bottom: 1px solid var(--abu-garis); padding-bottom: var(--spasi-3); margin-bottom: var(--spasi-4);">
             <div>
                 <div style="display: flex; align-items: center; gap: var(--spasi-2); margin-bottom: 4px;">
-                    <span style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--lime);">
+                    <h1 style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--lime); margin: 0; line-height: 1.2;">
                         {{ $booking->code }}
-                    </span>
+                    </h1>
                     <span class="badge-kategori {{ $booking->type->value === 'package' ? 'badge-kategori-bulanan' : 'badge-kategori-harian' }}">
                         {{ $booking->type->label() }}
                     </span>

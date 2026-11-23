@@ -75,6 +75,11 @@ class Booking extends Model
         return $this->belongsTo(User::class, 'cancelled_by');
     }
 
+    public function cancelledByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'cancelled_by');
+    }
+
     public function renewedFrom(): BelongsTo
     {
         return $this->belongsTo(Booking::class, 'renewed_from_id');

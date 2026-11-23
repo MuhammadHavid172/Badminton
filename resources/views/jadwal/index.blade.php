@@ -199,14 +199,14 @@
         @if ($tampilan === 'kalender' && $monthData)
             <div class="kalender-container" aria-label="Kalender Jadwal {{ $monthData['title'] }}">
                 {{-- Header Hari Kalender (Mulai Senin) --}}
-                <div class="kalender-grid-header" role="row">
-                    <div class="kalender-header-cell" role="columnheader">Sen</div>
-                    <div class="kalender-header-cell" role="columnheader">Sel</div>
-                    <div class="kalender-header-cell" role="columnheader">Rab</div>
-                    <div class="kalender-header-cell" role="columnheader">Kam</div>
-                    <div class="kalender-header-cell" role="columnheader">Jum</div>
-                    <div class="kalender-header-cell" role="columnheader">Sab</div>
-                    <div class="kalender-header-cell" role="columnheader">Min</div>
+                <div class="kalender-grid-header">
+                    <div class="kalender-header-cell">Sen</div>
+                    <div class="kalender-header-cell">Sel</div>
+                    <div class="kalender-header-cell">Rab</div>
+                    <div class="kalender-header-cell">Kam</div>
+                    <div class="kalender-header-cell">Jum</div>
+                    <div class="kalender-header-cell">Sab</div>
+                    <div class="kalender-header-cell">Min</div>
                 </div>
 
                 {{-- Badan Grid Kalender --}}

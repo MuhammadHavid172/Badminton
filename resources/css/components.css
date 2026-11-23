@@ -1752,7 +1752,11 @@ details[open] .faq-icon {
 }
 
 .kalender-day-cell.is-past {
-    opacity: 0.45;
+    opacity: 0.82;
+}
+
+.kalender-day-cell.is-past .kalender-empty-count {
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .kalender-day-empty {
@@ -2128,7 +2132,7 @@ details[open] .faq-icon {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #777770;
+    color: #4A4A44;
 }
 
 .slip-tiket-kode {
@@ -2172,7 +2176,7 @@ details[open] .faq-icon {
     font-family: var(--font-mono);
     font-size: 0.75rem;
     text-transform: uppercase;
-    color: #666660;
+    color: #4A4A44;
     letter-spacing: 0.05em;
     flex-shrink: 0;
 }
@@ -2253,7 +2257,7 @@ details[open] .faq-icon {
 
 .slip-status-expired {
     background-color: #EAEAEA;
-    color: #666666;
+    color: #444444;
     border: 1px solid #CCCCCC;
 }
 

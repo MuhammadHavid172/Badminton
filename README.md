@@ -16,7 +16,7 @@ Sistem dikembangkan bertahap sesuai acuan dokumen spesifikasi [docs/SPEK.md](doc
 - [x] **Fase 5**: Pembayaran, Perpanjang Bulanan, & Peringatan
 - [x] **Fase 6**: Admin Operasional (Area `/admin`, Check-in, Jatah Habis, Booking Langsung)
 - [x] **Fase 7**: Admin Manajemen & Mode Pantau Owner (`/owner`)
-- [ ] **Fase 8**: Poles, Keamanan, & Deploy
+- [x] **Fase 8**: Poles, Keamanan, & Deploy
 
 ---
 
@@ -387,6 +387,53 @@ Data transaksi demo mencakup:
 
 ---
 
+## 9. Poles, Keamanan, & Deploy (Fase 8)
+
+### A. Aksesibilitas WCAG 2.1 AA & Audit Desain
+- **Audit Aksesibilitas Terintegrasi (@axe-core/playwright)**:
+  - Setiap tampilan publik (`/jadwal` hari & kalender), halaman otentikasi (`/masuk`, `/daftar`), alur booking pengguna (`/booking/baru`, `/bayar`, tiket bukti lunas), dan dasbor admin (`/admin`, `/admin/booking`, `/admin/booking/{code}`) diaudit langsung melalui axe-core dengan tag `wcag2a` dan `wcag2aa`.
+  - Hasil audit: **0 pelanggaran kategori *serious* maupun *critical*** di kedua viewport (Desktop 1280x800 dan Mobile 390x844).
+- **Kontras Warna & Tipografi Inklusif**:
+  - Seluruh teks memenuhi rasio kontras minimum $\ge 4.5:1$ (teks normal) dan $\ge 3:1$ (teks besar/komponen UI).
+  - Teks pada tiket kertas terang (`#F4F4F0`) menggunakan `#4A4A44` dan `#171714` (rasio kontras 8.17:1 s/d 14.8:1).
+  - Kalender status lampau dan sesi admin lampau mempertahankan kontras tinggi tanpa degradasi opasitas berlebih.
+- **Ponsel & Target Sentuh**:
+  - Input form global (`input`, `select`, `textarea`) memiliki ukuran font $\ge 16\text{px}$ (`1rem`) untuk mencegah auto-zoom pada peramban iOS Safari.
+  - Seluruh tombol interaktif operasional admin memiliki area sentuh minimum 48px (`min-height: 48px`), sedangkan elemen konsumen publik minimal 44px.
+  - Bilah navigasi bawah mobile (`admin-mobile-bottom-bar` & `booking-sticky-bar`) mendukung `env(safe-area-inset-bottom)`.
+
+### B. Pengujian End-to-End Otomatis (Playwright)
+Script mandiri `tests/e2e/run_flows_and_axe.js` menjalankan pengujian browser Chromium headless pada viewport Desktop (1280x800) dan Mobile (390x844) mencakup 5 alur bisnis kritis:
+1. **Alur 1**: Tamu melihat jadwal publik (tampilan Per Hari dan Kalender Bulanan).
+2. **Alur 2**: Tamu mendaftar akun baru, masuk ke dasbor akun (`/akun`), keluar, dan login ulang dengan nomor HP yang baru didaftarkan.
+3. **Alur 3**: Customer memilih slot kosong, mengisi form booking Harian, menyelesaikan checkout pembayaran simulasi hingga menerima tiket bukti booking lunas berstatus PAID.
+4. **Alur 4**: Admin masuk ke dasbor Hari Ini (`/admin`) dan mencatat presensi kehadiran (`check-in`) pemain di lapangan.
+5. **Alur 5**: Admin membuka daftar semua booking, memeriksa rincian booking, dan melakukan pembatalan booking berbayar dengan input alasan wajib serta konfirmasi password otorisasi.
+
+### C. Keamanan HTTP & Server
+- **Middleware `SecurityHeaders`**:
+  - `X-Frame-Options: SAMEORIGIN` (mencegah clickjacking).
+  - `X-Content-Type-Options: nosniff` (mencegah MIME-sniffing).
+  - `Referrer-Policy: strict-origin-when-cross-origin` (melindungi data privat URL referer).
+  - `Permissions-Policy: camera=(), microphone=(), geolocation=()` (membatasi API perangkat keras).
+  - `Content-Security-Policy-Report-Only` (kerangka CSP modern).
+- **Pencegahan N+1 Query**:
+  - `Model::preventLazyLoading(!app()->isProduction())` aktif di lingkungan `local` dan `testing`. Memastikan seluruh relasi Eloquent yang diakses di view/service telah di-*eager load*.
+- **Halaman Error Kustom Bergaya Gelap**:
+  - `resources/views/errors/403.blade.php`: Halaman 403 Akses Ditolak bernuansa gelap dengan aksen limau dan tepat 1 `<h1>`.
+  - `resources/views/errors/404.blade.php`: Halaman 404 Tidak Ditemukan dengan navigasi kembali ke beranda.
+  - `resources/views/errors/500.blade.php`: Halaman 500 Terjadi Kendala Server yang aman tanpa membocorkan stack trace teknis kepada publik.
+
+### D. Dokumentasi Produksi & Panduan Operasional
+- **`.env.production.example`**: Berkas referensi konfigurasi lingkungan produksi siap pakai.
+- **[docs/DEPLOY.md](docs/DEPLOY.md)**: Panduan langkah-demi-langkah deployment untuk Shared Hosting cPanel dan VPS Ubuntu Nginx + PHP-FPM, konfigurasi Crontab Scheduler Laravel (`bookings:expire` dan `bookings:notify-renewal`), script backup database otomatis, dan prosedur *zero-downtime update*.
+- **[docs/ISI_DATA_ASLI.md](docs/ISI_DATA_ASLI.md)**: Panduan transisi dari data demo ke data riil (identitas GOR, lapangan, sesi, foto WebP via script `npm run foto`, pembuatan akun admin/owner nyata melalui perintah `gor:buat-akun`, dan pembersihan data demo).
+- **[docs/PERAN.md](docs/PERAN.md)**: Matriks hak akses 3 peran (`customer`, `admin`, `owner`), rincian izin per rute, dan prinsip pertahanan berlapis.
+- **[docs/QA_CHECKLIST.md](docs/QA_CHECKLIST.md)**: Panduan QA manual lintas perangkat (390px, 768px, 1024px, 1366px, 1920px), alur pelanggan, alur admin, alur owner, dan skenario *edge cases*.
+- **[docs/AUDIT_DESAIN.md](docs/AUDIT_DESAIN.md)**: Laporan audit desain 100% patuh terhadap `docs/DESIGN.md` dan aturan *Anti AI Slop*.
+
+---
+
 ## 10. Rute Aplikasi
 
 | Rute | Metode | Middleware | Deskripsi | Status |
@@ -477,7 +524,9 @@ php artisan test
 - `Tests\Feature\DatabaseSchemaTest`: 5 pengujian lolos (skema user & role, relasi court/session, UNIQUE constraint double-booking, setting cache get/set, activity logger).
 - `Tests\Feature\SeederTest`: 1 pengujian lolos (kepatuhan seeder terhadap config dinamis & data demo lengkap).
 - `Tests\Feature\DesignRulesTest`: 6 pengujian lolos (bebas AI slop: anti kata "Anda", anti frasa "Sekali main" / "Paket bulanan" / "penjaga", anti klaim kosong, anti emoji, anti background-clip text, anti glow/bayangan berwarna, backdrop-filter terbatas pada navbar).
+- `Tests\Feature\SecurityAndRouteAuditTest`: 6 pengujian lolos (verifikasi SecurityHeaders X-Frame-Options/nosniff/Referrer-Policy/Permissions-Policy/CSP, audit 100% rute non-publik terlindungi middleware auth dan peran, verifikasi seeder lingkungan produksi hanya memuat data dasar tanpa akun/booking demo, verifikasi preventLazyLoading aktif di non-produksi untuk menangkap N+1 query secara dini, verifikasi tampilan halaman error kustom 403/404/500 bergaya desain gelap konsisten dengan tepat satu h1, verifikasi proteksi mass assignment Eloquent model).
 - `Tests\Feature\LandingPageTest`: 9 pengujian lolos.
 - `Tests\Unit\ExampleTest` & `Tests\Feature\ExampleTest`: 2 pengujian lolos.
 
-**Total**: **105 Tests Passed (568 assertions)**, 100% hijau.
+**Total PHPUnit**: **111 Tests Passed (692 assertions)**, 100% hijau.
+**Total Playwright E2E & Axe**: **5 Alur Utama** diuji pada Desktop (1280x800) dan Mobile (390x844), **0 pelanggaran aksesibilitas WCAG AA serious/critical**, 100% lolos.

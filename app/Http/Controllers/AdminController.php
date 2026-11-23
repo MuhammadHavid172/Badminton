@@ -48,7 +48,7 @@ class AdminController extends Controller
 
         $bookings = Booking::where('type', BookingType::PACKAGE)
             ->where('status', BookingStatus::PAID)
-            ->with(['slots.session'])
+            ->with(['slots.session', 'slots.court'])
             ->get();
 
         $count = 0;
@@ -102,7 +102,7 @@ class AdminController extends Controller
         $sessions = PlaySession::where('is_active', true)->orderBy('sort_order')->get();
 
         // Ambil seluruh slot booking dan slot block untuk hari ini
-        $slotsToday = BookingSlot::with(['booking.user', 'court', 'session'])
+        $slotsToday = BookingSlot::with(['booking.user', 'booking.slots.session', 'court', 'session'])
             ->where('play_date', $todayStr)
             ->get()
             ->keyBy(fn($s) => "{$s->court_id}_{$s->play_session_id}");

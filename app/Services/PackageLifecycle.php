@@ -42,7 +42,10 @@ class PackageLifecycle
     {
         return $this->booking->slots
             ->sortBy(function (BookingSlot $slot) {
-                $sessionStart = $slot->playSession ? $slot->playSession->start_time : '00:00:00';
+                $session = $slot->relationLoaded('session')
+                    ? $slot->session
+                    : ($slot->relationLoaded('playSession') ? $slot->playSession : ($slot->session ?? null));
+                $sessionStart = $session ? $session->start_time : '00:00:00';
                 $dateStr = $slot->play_date instanceof Carbon ? $slot->play_date->format('Y-m-d') : (string) $slot->play_date;
                 return "{$dateStr} {$sessionStart}";
             })
@@ -96,6 +99,32 @@ class PackageLifecycle
     }
 
     /**
+     * Menghitung nomor pertemuan (1 s/d total) untuk objek BookingSlot tertentu.
+     */
+    public function meetingNumberForSlot(BookingSlot $slot): ?int
+    {
+        foreach ($this->slots() as $index => $s) {
+            if ($s->id === $slot->id) {
+                return $index + 1;
+            }
+        }
+
+        $date = $slot->play_date instanceof Carbon ? $slot->play_date->format('Y-m-d') : (string) $slot->play_date;
+        return $this->meetingNumberForDate($date);
+    }
+
+    /**
+     * Memeriksa apakah pertemuan terakhir paket berlangsung hari ini (Jayapura).
+     */
+    public function isLastMeetingToday(?Carbon $now = null): bool
+    {
+        $currentTime = $now ? $now->copy()->setTimezone('Asia/Jayapura') : Carbon::now('Asia/Jayapura');
+        $lastPlayDate = $this->lastPlayDate();
+
+        return $lastPlayDate === $currentTime->format('Y-m-d');
+    }
+
+    /**
      * Menghitung sisa pertemuan yang belum selesai menurut zona waktu Asia/Jayapura.
      * Sesi dianggap selesai jika jam akhir sesi pada tanggal tersebut sudah lewat dari waktu saat ini.
      */
@@ -106,7 +135,10 @@ class PackageLifecycle
 
         foreach ($this->slots() as $slot) {
             $slotDate = $slot->play_date instanceof Carbon ? $slot->play_date->format('Y-m-d') : (string) $slot->play_date;
-            $endTime = $slot->playSession ? $slot->playSession->end_time : '23:59:59';
+            $session = $slot->relationLoaded('session')
+                ? $slot->session
+                : ($slot->relationLoaded('playSession') ? $slot->playSession : ($slot->session ?? null));
+            $endTime = $session ? $session->end_time : '23:59:59';
 
             $slotEndDateTime = Carbon::parse("{$slotDate} {$endTime}", 'Asia/Jayapura');
 
@@ -169,7 +201,10 @@ class PackageLifecycle
             $todayJayapura = $currentTime->format('Y-m-d');
 
             if ($lastDate === $todayJayapura) {
-                $endTime = $lastSlot->playSession ? $lastSlot->playSession->end_time : '23:59:59';
+                $session = $lastSlot->relationLoaded('session')
+                    ? $lastSlot->session
+                    : ($lastSlot->relationLoaded('playSession') ? $lastSlot->playSession : ($lastSlot->session ?? null));
+                $endTime = $session ? $session->end_time : '23:59:59';
                 $lastSlotEnd = Carbon::parse("{$lastDate} {$endTime}", 'Asia/Jayapura');
                 if ($lastSlotEnd->greaterThan($currentTime)) {
                     return 'terakhir_hari_ini';

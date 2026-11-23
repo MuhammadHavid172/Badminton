@@ -126,7 +126,7 @@
             @endphp
 
             <section class="admin-session-section {{ $isCurrent ? 'is-current' : ($isPast ? 'is-past' : '') }}"
-                     style="background-color: #171714; border: 1px solid {{ $isCurrent ? 'var(--lime)' : 'var(--abu-garis)' }}; border-radius: var(--radius-md); overflow: hidden; {{ $isPast ? 'opacity: 0.72;' : '' }}">
+                     style="background-color: {{ $isPast ? '#131310' : '#171714' }}; border: 1px solid {{ $isCurrent ? 'var(--lime)' : ($isPast ? 'rgba(255, 255, 255, 0.08)' : 'var(--abu-garis)') }}; border-radius: var(--radius-md); overflow: hidden;">
 
                 {{-- Header Sesi --}}
                 <div style="padding: var(--spasi-3) var(--spasi-4); background-color: {{ $isCurrent ? 'rgba(218, 255, 4, 0.08)' : '#1C1C18' }}; border-bottom: 1px solid {{ $isCurrent ? 'rgba(218, 255, 4, 0.2)' : 'var(--abu-garis)' }}; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--spasi-2);">
