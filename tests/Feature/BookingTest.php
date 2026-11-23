@@ -153,6 +153,7 @@ class BookingTest extends TestCase
             'play_date' => $conflictDateStr,
             'play_session_id' => $this->session->id,
             'reason' => 'Perbaikan Karpet Lapangan',
+            'created_by' => $this->admin->id,
         ]);
 
         $response = $this->actingAs($this->customer)
@@ -181,6 +182,7 @@ class BookingTest extends TestCase
             'play_date' => $date,
             'play_session_id' => $this->session->id,
             'reason' => 'Turnamen Lokal',
+            'created_by' => $this->admin->id,
         ]);
 
         $responseBlocked = $this->actingAs($this->customer)

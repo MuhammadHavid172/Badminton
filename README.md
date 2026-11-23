@@ -12,7 +12,7 @@ Sistem dikembangkan bertahap sesuai acuan dokumen spesifikasi [docs/SPEK.md](doc
 - [x] **Fase 1**: Fondasi Data (Skema Lengkap DB, Enum, Model Relasi, Helper, Seeder Dinamis & Data Demo)
 - [x] **Fase 2**: Jadwal Publik (`/jadwal`)
 - [x] **Fase 3**: Otentikasi & Akun (`/masuk`, `/daftar`, Profil)
-- [ ] **Fase 4**: Alur Booking Pengguna (Harian & Bulanan)
+- [x] **Fase 4**: Alur Booking Pengguna (Harian & Bulanan)
 - [ ] **Fase 5**: Operasional Lapangan & Admin Lapangan
 - [ ] **Fase 6**: Manajemen Admin & Pengaturan
 - [ ] **Fase 7**: Mode Pantau Pemilik (*Owner*)
@@ -126,7 +126,54 @@ php artisan gor:buat-admin --nama="Nama Admin" --hp="08123456789" --password="pa
 
 ---
 
-## 5. Akun Demo & Data Awal (Lingkungan Lokal)
+## 5. Alur Booking Pengguna & Tiket (Fase 4)
+
+### A. Fitur & Mekanisme Inti
+- **Integrasi Papan Jadwal ke Booking**: Seluruh sel berstatus `kosong` pada halaman `/jadwal` berfungsi langsung sebagai tautan interaktif menuju `GET /booking/baru?lapangan=&sesi=&tanggal=`.
+- **Pendaftaran Ringkas Inline (*Guest Checkout*)**: Pengunjung tamu yang belum login langsung disajikan form pendaftaran ringkas (Nama, Nomor HP, Password, Tim & Email opsional) di halaman `/booking/baru`. Setelah klik "Booking sekarang", akun otomatis dibuat, sesi langsung login, dan transaksi booking langsung tercipta tanpa kehilangan pilihan slot.
+- **Kategori Sewa Harian vs Bulanan**:
+  - **Harian**: 1 pertemuan pada tanggal & sesi terpilih. Harga snapshot `settings.price_single` (Rp 200.000).
+  - **Bulanan**: 4 pertemuan mingguan terkunci berturut-turut pada hari, lapangan, dan sesi yang sama (+0, +7, +14, +21 hari). Harga snapshot `settings.price_package` (Rp 600.000). Perhitungan hemat ditampilkan otomatis (`Hemat Rp 200.000`), beserta kalimat penegas: *"Slot lanjutan tidak dikunci. Siapa cepat dia dapat."*.
+  - *Pengecekan Bentrok*: Jika ada satu tanggal dari 4 pertemuan yang bentrok (terisi atau ditutup), radio Bulanan otomatis dinonaktifkan (*disabled*) dan menyebutkan tanggal yang bentrok.
+- **Pengamanan Konkurensi Database**:
+  - Constraint `UNIQUE (court_id, play_session_id, play_date)` pada database adalah penjaga utama konkurensi.
+  - Jika dua pengguna memesan slot yang sama dalam waktu berdekatan, transaksi kedua gagal secara ramah dengan pesan: *"Slot ini baru saja diambil orang lain. Pilih slot lain ya."*.
+- **Waktu Tahan (*Hold Minutes*) & Hitung Mundur**:
+  - Setiap booking baru berstatus `pending_payment` dengan `expires_at = now + hold_minutes` (bawaan 15 menit).
+  - Halaman detail tiket (`/booking/{code}`) menyajikan hitung mundur waktu tahan (format `mm:ss`, muat ulang otomatis saat habis, tanpa atribut `aria-live` yang berisik bagi pembaca layar).
+- **Pembatalan oleh Pemesan**:
+  - Pemesan dapat membatalkan booking berstatus `pending_payment` melalui tombol "Batalkan booking"; slot langsung dibebaskan dan dihapus dari `booking_slots`.
+- **Halaman "Booking Saya" (`/booking`)**:
+  - Terbagi menjadi 3 bagian: **Menunggu Bayar**, **Akan Datang**, dan **Riwayat**.
+  - Menampilkan kartu baris lengkap dengan kategori, jam, lapangan, daftar tanggal pertemuan (menandai pertemuan yang sudah lewat), total harga, status badge, dan tombol aksi.
+- **Penanda "Punyamu" pada Jadwal**:
+  - Sel jadwal terisi milik pengguna yang sedang login diberi badge khusus `"Punyamu"`.
+- **Otorisasi & Kebijakan Hak Akses (`BookingPolicy`)**:
+  - Detail booking hanya dapat diakses oleh pemilik booking, admin, dan owner.
+  - Pembatalan mandiri hanya dapat dilakukan oleh pemilik booking.
+  - Akun dengan peran `owner` dilarang membuat booking dan disajikan halaman penjelas *"Akun owner hanya untuk memantau"*.
+- **Pembersihan Otomatis (*Scheduler*)**:
+  - Command `php artisan bookings:expire` membersihkan booking `pending_payment` yang melewati `expires_at` dan menghapus slotnya. Booking `paid` aman dan tidak disentuh.
+  - Dijadwalkan berjalan setiap menit di `app/Console/Kernel.php`.
+
+### B. Menjalankan Task Scheduler
+Untuk menjalankan cron/scheduler pembersihan slot otomatis di lingkungan lokal:
+```bash
+php artisan schedule:work
+```
+Pada server produksi, tambahkan satu baris cron pada crontab:
+```bash
+* * * * * cd /path/to/project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+### C. Desain "Slip Tiket" Datar
+Mengikuti aturan ketat [docs/DESIGN.md](docs/DESIGN.md):
+- Permukaan terang datar bertekstur kertas halus (`#F4F4F0`, teks gelap `#1A1A18`) dengan garis putus-putus (*dashed border*) dan kode booking besar monospace. Ini adalah **satu-satunya elemen terang** di tengah halaman tema gelap.
+- Pada layar ponsel (< 768px), panel ringkasan menempel (*sticky bottom bar*) di bagian bawah layar dengan tombol "Booking sekarang" yang otomatis dinonaktifkan saat submit.
+
+---
+
+## 6. Akun Demo & Data Awal (Lingkungan Lokal)
 
 Saat menjalankan `php artisan migrate:fresh --seed` pada `APP_ENV=local`:
 
@@ -146,7 +193,7 @@ Data transaksi demo untuk **Senin terdekat**:
 
 ---
 
-## 6. Rute Aplikasi
+## 7. Rute Aplikasi
 
 | Rute | Metode | Middleware | Deskripsi | Status |
 | :--- | :--- | :--- | :--- | :--- |
@@ -154,6 +201,12 @@ Data transaksi demo untuk **Senin terdekat**:
 | `/jadwal` | GET | `web` | Halaman publik jadwal lapangan (Per Hari & Kalender) | 200 OK |
 | `/api/jadwal/hari` | GET | `throttle:60,1` | API JSON jadwal harian (Tanpa info privat, cache 10s) | 200 OK |
 | `/api/jadwal/bulan` | GET | `throttle:60,1` | API JSON kalender bulanan (Tanpa info privat, cache 10s) | 200 OK |
+| `/booking/baru` | GET | `web` | Halaman form booking (Slip tiket draf, pilihan Harian/Bulanan, pendaftaran inline tamu) | 200 OK |
+| `/booking` | POST | `throttle:10,1` | Proses transaksi pembuatan booking baru (DB transaction + UNIQUE guard) | 302 Redirect |
+| `/booking` | GET | `auth` | Halaman "Booking Saya" (Menunggu Bayar, Akan Datang, Riwayat) | 200 OK |
+| `/booking/{code}` | GET | `auth` | Halaman detail tiket booking dengan hitung mundur waktu tahan | 200 OK |
+| `/booking/{code}/batal` | POST | `auth` | Pembatalan booking pending payment oleh pemesan | 302 Redirect |
+| `/booking/{code}/simulasi-lunas` | POST | `auth` | Tombol simulasi bayar lunas (Khusus `APP_ENV=local` Fase 4) | 302 Redirect |
 | `/masuk` | GET, POST | `guest` | Halaman & proses login (HP/Email + password) | 200 OK |
 | `/daftar` | GET, POST | `guest` | Halaman & proses pendaftaran customer baru | 200 OK |
 | `/keluar` | POST | `auth` | Proses logout pengguna & invalidasi sesi | 302 Redirect |
@@ -166,7 +219,7 @@ Data transaksi demo untuk **Senin terdekat**:
 
 ---
 
-## 7. Hasil Pengujian (PHPUnit)
+## 8. Hasil Pengujian (PHPUnit)
 
 Seluruh pengujian unit dan fitur berjalan otomatis:
 
@@ -175,6 +228,7 @@ php artisan test
 ```
 
 **Ringkasan Hasil Uji**:
+- `Tests\Feature\BookingTest`: 14 pengujian lolos (Harian 1 slot & snapshot harga, Bulanan 4 slot +7 hari, Bulanan ditolak jika ada tanggal bentrok beserta rincian tanggal, slot ditutup & sesi lewat ditolak, proteksi konkurensi database gagal ramah, pendaftaran ringkas tamu inline langsung booking, batas maksimal pending booking per user, command scheduler `bookings:expire` membersihkan hold tanpa menyentuh paid, pembatalan booking oleh pemesan membebaskan slot, otorisasi BookingPolicy, snapshot harga kebal perubahan setting, peran owner dilarang booking, tiga bagian Booking Saya, penanda "Punyamu" pada sel jadwal).
 - `Tests\Feature\AuthTest`: 13 pengujian lolos (normalisasi HP, registrasi, login HP & email, akun nonaktif, rate limit, redirect peran, intended URL, otorisasi 403, logout, artisan commands, ubah profil & password).
 - `Tests\Unit\PackageLifecycleTest`: 4 pengujian lolos (total pertemuan, sisa pertemuan zona Jayapura, penanda Sisa 1x & perpanjangan, state siklus).
 - `Tests\Unit\EnumTest`: 5 pengujian lolos (nilai, integritas label "Harian" & "Bulanan", status).
@@ -187,4 +241,4 @@ php artisan test
 - `Tests\Feature\LandingPageTest`: 9 pengujian lolos.
 - `Tests\Unit\ExampleTest` & `Tests\Feature\ExampleTest`: 2 pengujian lolos.
 
-**Total**: **59 Tests Passed (253 assertions)**, 100% hijau.
+**Total**: **73 Tests Passed (316 assertions)**, 100% hijau.

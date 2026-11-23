@@ -76,7 +76,7 @@ class BookingController extends Controller
                 'email.unique' => 'Alamat email ini sudah terdaftar.',
             ]);
 
-            $normalizedPhone = normalize_phone_number($regValidated['phone']);
+            $normalizedPhone = normalisasi_nomor_hp($regValidated['phone']);
 
             if (User::where('phone', $normalizedPhone)->exists()) {
                 throw ValidationException::withMessages([

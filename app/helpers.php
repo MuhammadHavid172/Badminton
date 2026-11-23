@@ -104,3 +104,13 @@ if (!function_exists('normalisasi_nomor_hp')) {
         return $clean;
     }
 }
+
+if (!function_exists('normalize_phone_number')) {
+    /**
+     * Alias normalisasi_nomor_hp.
+     */
+    function normalize_phone_number(?string $phone): string
+    {
+        return normalisasi_nomor_hp($phone);
+    }
+}
