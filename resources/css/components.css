@@ -2991,3 +2991,138 @@ a.slot-cell-kosong:focus-visible {
         color: #000000 !important;
     }
 }
+
+/* ==========================================================================
+   11. AREA ADMIN OPERASIONAL (FASE 6)
+   ========================================================================== */
+
+/* Sub-Navigasi Desktop Pengelola */
+.admin-subnav-desktop {
+    background-color: #141411;
+    border-bottom: 1px solid var(--abu-garis);
+}
+
+.admin-subnav-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--spasi-1);
+    padding: var(--spasi-2) 0;
+    overflow-x: auto;
+}
+
+.admin-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spasi-2);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--teks-redup);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease, background-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.admin-nav-link:hover {
+    color: var(--putih);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.admin-nav-link.is-active {
+    color: var(--lime);
+    background-color: rgba(218, 255, 4, 0.08);
+    font-weight: 600;
+}
+
+.admin-nav-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    background-color: #FFB020;
+    color: var(--hitam);
+    padding: 1px 6px;
+    border-radius: 9999px;
+}
+
+@media (max-width: 767px) {
+    .admin-subnav-desktop {
+        display: none;
+    }
+}
+
+/* Bilah Bawah Tetap Mobile (< 768px, Touch Target 48px) */
+.admin-mobile-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: #141411;
+    border-top: 1px solid var(--abu-garis);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: 64px;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .admin-mobile-bottom-bar {
+        display: none;
+    }
+}
+
+.admin-bar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    min-width: 48px;
+    text-decoration: none;
+    color: var(--teks-redup);
+    font-size: 0.6875rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    position: relative;
+    padding: 4px 2px;
+}
+
+.admin-bar-item:hover,
+.admin-bar-item.is-active {
+    color: var(--lime);
+}
+
+.admin-bar-icon {
+    margin-bottom: 2px;
+}
+
+.admin-nav-badge-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #FFB020;
+    border-radius: 50%;
+    margin-left: 2px;
+    vertical-align: middle;
+}
+
+/* Tabel Responsif Admin vs Daftar Bertumpuk Mobile */
+.admin-table-desktop {
+    display: block;
+}
+
+.admin-list-mobile {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .admin-table-desktop {
+        display: none !important;
+    }
+
+    .admin-list-mobile {
+        display: flex !important;
+    }
+}
+

@@ -70,11 +70,58 @@ Route::middleware('auth')->group(function () {
 // Area Admin (/admin) - Hanya untuk role:admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/ringkasan', [AdminController::class, 'ringkasan'])->name('ringkasan');
+    Route::post('/slot/{id}/check-in', [AdminController::class, 'checkIn'])->name('slot.check-in');
+    Route::post('/slot/{id}/batal-check-in', [AdminController::class, 'cancelCheckIn'])->name('slot.batal-check-in');
+
+    Route::get('/jatah-habis', [AdminController::class, 'jatahHabis'])->name('jatah-habis');
+    Route::get('/booking-langsung', [AdminController::class, 'bookingLangsungForm'])->name('booking-langsung');
+    Route::post('/booking-langsung', [AdminController::class, 'bookingLangsungStore'])->name('booking-langsung.store');
+
+    Route::get('/tutup-slot', [AdminController::class, 'tutupSlotForm'])->name('tutup-slot');
+    Route::post('/tutup-slot', [AdminController::class, 'tutupSlotStore'])->name('tutup-slot.store');
+    Route::delete('/tutup-slot/{id}', [AdminController::class, 'bukaSlot'])->name('tutup-slot.destroy');
+
+    Route::get('/booking', [AdminController::class, 'daftarBooking'])->name('booking.index');
+    Route::get('/booking/ekspor-csv', [AdminController::class, 'eksporCsv'])->name('booking.ekspor-csv');
+    Route::get('/booking/{code}', [AdminController::class, 'showBooking'])->name('booking.detail');
+    Route::post('/booking/{code}/batal', [AdminController::class, 'cancelBooking'])->name('booking.batal');
+    Route::post('/booking/{code}/perpanjang-atas-nama', [AdminController::class, 'perpanjangAtasNama'])->name('booking.perpanjang-atas-nama');
+
+    // Manajemen Pengguna (Fase 7)
+    Route::get('/pengguna', [AdminController::class, 'pengguna'])->name('pengguna.index');
+    Route::post('/pengguna', [AdminController::class, 'tambahPengguna'])->name('pengguna.store');
+    Route::get('/pengguna/{id}', [AdminController::class, 'showPengguna'])->name('pengguna.show');
+    Route::put('/pengguna/{id}/peran', [AdminController::class, 'ubahPeranPengguna'])->name('pengguna.peran');
+    Route::put('/pengguna/{id}/toggle-status', [AdminController::class, 'toggleStatusPengguna'])->name('pengguna.toggle-status');
+    Route::post('/pengguna/{id}/reset-password', [AdminController::class, 'resetPasswordPengguna'])->name('pengguna.reset-password');
+
+    // Log Aktivitas (Fase 7)
+    Route::get('/aktivitas', [AdminController::class, 'aktivitas'])->name('aktivitas');
+
+    // Laporan & Ekspor Transaksi (Fase 7)
+    Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
+    Route::get('/laporan/ekspor-csv', [AdminController::class, 'laporanEksporCsv'])->name('laporan.ekspor-csv');
+
+    // Pengaturan Operasional (Fase 7)
+    Route::get('/pengaturan', [AdminController::class, 'pengaturan'])->name('pengaturan');
+    Route::put('/pengaturan', [AdminController::class, 'updatePengaturan'])->name('pengaturan.update');
 });
 
-// Area Owner (/owner) - Hanya untuk role:owner
+// Area Owner (/owner) - Mode Pantau (Hanya Lihat) - Hanya untuk role:owner (Fase 7)
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->group(function () {
     Route::get('/', [OwnerController::class, 'index'])->name('dashboard');
+    Route::get('/ringkasan', [OwnerController::class, 'ringkasan'])->name('ringkasan');
+    Route::get('/hari-ini', [OwnerController::class, 'hariIni'])->name('hari-ini');
+    Route::get('/jatah-habis', [OwnerController::class, 'jatahHabis'])->name('jatah-habis');
+    Route::get('/booking', [OwnerController::class, 'booking'])->name('booking.index');
+    Route::get('/booking/{code}', [OwnerController::class, 'showBooking'])->name('booking.detail');
+    Route::get('/pengguna', [OwnerController::class, 'pengguna'])->name('pengguna.index');
+    Route::get('/pengguna/{id}', [OwnerController::class, 'showPengguna'])->name('pengguna.show');
+    Route::get('/aktivitas', [OwnerController::class, 'aktivitas'])->name('aktivitas');
+    Route::get('/laporan', [OwnerController::class, 'laporan'])->name('laporan');
+    Route::get('/laporan/ekspor-csv', [OwnerController::class, 'laporanEksporCsv'])->name('laporan.ekspor-csv');
+    Route::get('/pengaturan', [OwnerController::class, 'pengaturan'])->name('pengaturan');
 });
 
 // Halaman Pengembang: Katalog Komponen (Hanya Lokal, 404 di Produksi)

@@ -14,7 +14,7 @@ Sistem dikembangkan bertahap sesuai acuan dokumen spesifikasi [docs/SPEK.md](doc
 - [x] **Fase 3**: Otentikasi & Akun (`/masuk`, `/daftar`, Profil)
 - [x] **Fase 4**: Alur Booking Pengguna (Harian & Bulanan)
 - [x] **Fase 5**: Pembayaran, Perpanjang Bulanan, & Peringatan
-- [ ] **Fase 6**: Admin Operasional (Area `/admin`, Check-in, Jatah Habis, Booking Langsung)
+- [x] **Fase 6**: Admin Operasional (Area `/admin`, Check-in, Jatah Habis, Booking Langsung)
 - [ ] **Fase 7**: Admin Manajemen & Mode Pantau Owner (`/owner`)
 - [ ] **Fase 8**: Poles, Keamanan, & Deploy
 
@@ -223,7 +223,73 @@ Mengikuti aturan ketat [docs/DESIGN.md](docs/DESIGN.md):
 
 ---
 
-## 7. Akun Demo & Data Awal (Lingkungan Lokal)
+## 7. Admin Operasional (Fase 6)
+
+### A. Antarmuka Mobile-First & Touch Target 48px
+Admin menggabungkan fungsi penjaga lapangan dan administrator operasional:
+- Seluruh antarmuka dirancang *mobile-first* dengan tombol aksi dan item interaktif berukuran minimal **48px** untuk kenyamanan jempol saat mengelola presensi di lapangan.
+- **Navigasi Ganda**:
+  - Desktop (>= 768px): Sub-navigasi horizontal di bawah header (`Hari Ini`, `Jatah Habis`, `Daftar Booking`, `Booking Langsung`, `Tutup / Buka Slot`).
+  - Ponsel (< 768px): Bilah bawah tetap (*fixed bottom bar*) 5 item: **Hari Ini**, **Booking**, **Langsung**, **Jatah** (dengan dot badge indikator), dan **Tutup**.
+
+### B. Landing Admin "Hari Ini" (`/admin`)
+- Daftar per sesi (bukan tabel lebar yang memerlukan scroll horizontal):
+  - Sesi yang sedang berlangsung (*Sedang Berlangsung*) otomatis ditempatkan paling atas dengan highlight garis limau.
+  - Sesi berikutnya ditempatkan di tengah.
+  - Sesi yang sudah lewat ditempatkan di bawah dalam kondisi diredupkan (*dimmed*).
+- Setiap item lapangan menyajikan nama PB/pemesan, tautan telepon langsung (`tel:`), badge kategori (`HARIAN` / `BULANAN`), chip siklus ("Pertemuan X dari 4" atau "TERAKHIR HARI INI"), status pembayaran, dan tombol besar **"Sudah Hadir"** (check-in kehadiran, dapat dibatalkan jika salah klik).
+- Slot kosong menyajikan tautan cepat menuju form Booking Langsung. Slot lewat tanpa presensi diberi penanda teks *"Tidak tercatat hadir"*.
+- Dilengkapi kotak pencarian instan (`q`) berdasarkan kode booking, nama pemesan, tim, atau nomor HP.
+
+### C. Detail Booking Operasional Admin (`/admin/booking/{code}`)
+- Rincian lengkap pemesan (nama, nomor HP, email, PB/tim, waktu booking dibuat, pembuat atas nama jika ada).
+- Presensi per slot: Catatan waktu kehadiran (zona Jayapura WIT) dan petugas admin yang mencatat, dilengkapi form check-in / batal check-in per sesi.
+- Riwayat transaksi pembayaran terintegrasi.
+- **Pembatalan oleh Admin**:
+  - Membutuhkan alasan pembatalan wajib dan catatan pengembalian dana (*refund note*) opsional.
+  - **Aturan Pembebasan Slot**: Membebaskan SEMUA slot masa depan sehingga bisa dipesan kembali; slot masa lalu yang telah lewat tetap dipertahankan sebagai riwayat kehadiran.
+  - Notifikasi pembatalan (`BookingCancelledNotification`) otomatis dikirimkan ke pemesan.
+  - **Pengaman Konfirmasi Password**: Jika booking berstatus lunas (`PAID`), admin wajib memasukkan konfirmasi password akun untuk otorisasi pembatalan.
+
+### D. Penanganan Jatah Bulanan Habis (`/admin/jatah-habis`)
+- Mendeteksi sewa Bulanan berbayar yang:
+  1. Tersisa 1 pertemuan atau akan berakhir dalam 14 hari ke depan.
+  2. Baru berakhir dalam 7 hari terakhir dan belum diperpanjang (`continuationStatus !== 'sudah_lanjut'`).
+- Nomor HP pemesan dapat dihubungi langsung (`tel:`).
+- **Salin Pesan Pengingat**: Satu tombol salin yang otomatis menyalin teks template ramah dari `lang/id/admin.php` ke clipboard untuk dikirimkan ke pelanggan via chat/telepon tanpa menjanjikan slot diamankan.
+- **Perpanjang Atas Nama**: Admin dapat memproses sewa 4 minggu lanjutan langsung untuk pelanggan:
+  - Opsi *"Tunai, sudah dibayar"*: Langsung lunas (`PAID`), mencatat payment tunai dan log.
+  - Opsi *"Tahan dulu"*: Menahan slot dengan status `PENDING_PAYMENT`.
+
+### E. Booking Langsung di Tempat (`/admin/booking-langsung`)
+- Memfasilitasi pendaftaran pelanggan di kasir atau via telepon.
+- Pilihan slot (lapangan, sesi, tanggal) dan kategori sewa (Harian / Bulanan).
+- Fleksibilitas pelanggan: Pilih dari daftar pelanggan yang sudah ada atau buat akun cepat pelanggan baru (nama, nomor HP, nama tim opsional, password acak aman yang bisa direset nanti).
+- Metode bayar: *"Tunai, sudah dibayar"* (lunas langsung) atau *"Tahan dulu"*.
+- Memakai ulang `BookingService` Fase 4 untuk integritas transaksi.
+
+### F. Tutup & Buka Slot (`/admin/tutup-slot`)
+- Fasilitas pemeliharaan lapangan (ganti lampu, perbaikan karpet) atau acara turnamen internal.
+- Menutup lapangan pada tanggal tertentu untuk satu sesi spesifik atau semua sesi sepanjang hari.
+- **Validasi Anti Bentrok**: Sistem menolak penutupan slot jika sudah terdapat booking aktif (paid atau pending yang masih berlaku) pada jadwal tersebut, dan menampilkan informasi bentrok secara ramah.
+- Daftar slot yang sedang ditutup (aktif & mendatang) dapat dibuka kembali (*Buka Kembali Slot*) dengan sekali klik.
+
+### G. Daftar Semua Booking & Ekspor CSV Aman (`/admin/booking`)
+- Filter lengkap: Rentang tanggal (dari - sampai), lapangan, status booking, kategori sewa, dan pencarian teks.
+- Tampilan responsif: Tabel rapat garis tipis di desktop, berubah menjadi daftar kartu bertumpuk (*stacked list*) di ponsel tanpa scroll horizontal.
+- **Ekspor CSV Kebal CSV Injection**:
+  - Tombol "Ekspor CSV (Sesuai Filter)" mengekspor seluruh transaksi sesuai filter aktif.
+  - **Pengaman Formula / CSV Injection**: Seluruh sel yang diawali karakter berbahaya (`=`, `+`, `-`, `@`) otomatis diawali tanda petik tunggal (`'`) sebelum ditulis ke file stream CSV.
+  - Seluruh aktivitas ekspor CSV dicatat ke `activity_logs`.
+
+### H. Pengaman Sistem & Log Aktivitas
+- **Idle Timeout**: Middleware `EnforceIdleTimeout` otomatis mengeluarkan (*logout*) sesi admin atau owner yang tidak aktif selama lebih dari `config('gor.idle_timeout_minutes')` (default 60 menit) dan mengarahkan kembali ke halaman login.
+- **Audit Log Terintegrasi**: Seluruh mutasi operasional (check-in, batal check-in, booking langsung, perpanjang atas nama, tutup slot, buka slot, pembatalan booking, ekspor CSV) tercatat secara detail di tabel `activity_logs` beserta pelaku, peran, dan metadata.
+- **Perlindungan Privasi**: Nomor HP pelanggan hanya dapat dilihat oleh admin dan owner; endpoint publik (`/jadwal`, `/api/jadwal/*`) dijamin tidak pernah mengekspos nomor HP pelanggan.
+
+---
+
+## 8. Akun Demo & Data Awal (Lingkungan Lokal)
 
 Saat menjalankan `php artisan migrate:fresh --seed` pada `APP_ENV=local`:
 
@@ -245,7 +311,7 @@ Data transaksi demo mencakup:
 
 ---
 
-## 8. Rute Aplikasi
+## 9. Rute Aplikasi
 
 | Rute | Metode | Middleware | Deskripsi | Status |
 | :--- | :--- | :--- | :--- | :--- |
@@ -271,13 +337,26 @@ Data transaksi demo mencakup:
 | `/akun` | GET | `auth` | Halaman profil dan ubah password pengguna | 200 OK |
 | `/akun/profil` | PUT | `auth` | Proses pembaruan nama, email, dan nama tim | 302 Redirect |
 | `/akun/password` | PUT | `auth` | Proses ubah password dengan verifikasi password lama | 302 Redirect |
-| `/admin` | GET | `auth`, `role:admin` | Kerangka Dashboard Admin (Siap untuk Fase 6) | 200 OK |
+| `/admin` | GET | `auth`, `role:admin` | Landing Admin "Hari Ini" (daftar sesi, presensi 48px, search) | 200 OK |
+| `/admin/slot/{id}/check-in` | POST | `auth`, `role:admin` | Pencatatan presensi kehadiran pelanggan per slot | 302 Redirect |
+| `/admin/slot/{id}/batal-check-in` | POST | `auth`, `role:admin` | Pembatalan pencatatan kehadiran slot | 302 Redirect |
+| `/admin/booking/{code}` | GET | `auth`, `role:admin` | Detail booking operasional, riwayat pembayaran, & presensi | 200 OK |
+| `/admin/booking/{code}/batal` | POST | `auth`, `role:admin` | Pembatalan booking oleh admin (alasan wajib, konfirmasi password) | 302 Redirect |
+| `/admin/jatah-habis` | GET | `auth`, `role:admin` | Daftar sewa Bulanan kritis/berakhir, salin pengingat | 200 OK |
+| `/admin/booking/{code}/perpanjang-atas-nama` | POST | `auth`, `role:admin` | Perpanjangan sewa Bulanan atas nama pemesan (tunai/tahan) | 302 Redirect |
+| `/admin/booking-langsung` | GET | `auth`, `role:admin` | Form pembuatan booking langsung di kasir | 200 OK |
+| `/admin/booking-langsung` | POST | `auth`, `role:admin` | Proses simpan booking langsung (tunai lunas / tahan) | 302 Redirect |
+| `/admin/tutup-slot` | GET | `auth`, `role:admin` | Form tutup slot & daftar slot yang sedang ditutup | 200 OK |
+| `/admin/tutup-slot` | POST | `auth`, `role:admin` | Simpan penutupan slot (pengecekan anti booking aktif) | 302 Redirect |
+| `/admin/tutup-slot/{id}` | DELETE | `auth`, `role:admin` | Buka kembali slot yang ditutup | 302 Redirect |
+| `/admin/booking` | GET | `auth`, `role:admin` | Daftar semua booking dengan filter lengkap & responsif mobile | 200 OK |
+| `/admin/booking/ekspor-csv` | GET | `auth`, `role:admin` | Ekspor CSV aman dari CSV Injection sesuai filter aktif | 200 Stream |
 | `/owner` | GET | `auth`, `role:owner` | Kerangka Mode Pantau Owner (Siap untuk Fase 7) | 200 OK |
 | `/dev/komponen` | GET | `web` | Katalog komponen visual (Hanya aktif di `APP_ENV=local`) | 200 OK |
 
 ---
 
-## 9. Hasil Pengujian (PHPUnit)
+## 10. Hasil Pengujian (PHPUnit)
 
 Seluruh pengujian unit dan fitur berjalan otomatis:
 
@@ -286,6 +365,7 @@ php artisan test
 ```
 
 **Ringkasan Hasil Uji**:
+- `Tests\Feature\AdminTest`: 11 pengujian lolos (kontrol akses admin murni & larangan bagi customer/owner, presensi check-in dan pembatalan check-in idempoten dengan catatan kehadiran & activity log, pencarian multi-kriteria kode/nama/tim/HP, daftar jatah habis Bulanan kritis dengan akses nomor HP aman dan proteksi endpoint publik bebas HP, perpanjangan sewa Bulanan atas nama metode tunai lunas & tahan dulu, booking langsung di tempat dengan registrasi otomatis pelanggan baru & lunas kasir, penutupan slot pemeliharaan & penolakan anti-bentrok jika ada booking aktif, pembatalan booking admin dengan pelepasan slot masa depan & penyimpanan riwayat slot lampau serta notifikasi, konfirmasi password admin untuk pembatalan booking berbayar, ekspor stream CSV kebal formula injection dengan prefix petik tunggal & pencatatan log, pemaksaan logout EnforceIdleTimeout untuk sesi admin/owner yang tidak aktif melebihi batas konfigurasi).
 - `Tests\Feature\PaymentAndRenewalTest`: 11 pengujian lolos (pembayaran simulasi berhasil & notifikasi database, pembayaran idempoten, penolakan pembayaran booking expired/cancelled, pembayaran gagal lalu coba lagi, otorisasi hanya pemilik yang boleh bayar, visualisasi PackageLifecycle & chip state di UI, perpanjangan Bulanan sukses 4 tanggal & snapshot harga baru, penanganan bentrok perpanjangan & pemilihan alternatif lapangan/sesi, command scheduler `bookings:notify-renewal` idempoten tanpa duplikasi, banner permanen MODE UJI di environment production, halaman notifikasi & tandai semua dibaca).
 - `Tests\Feature\BookingTest`: 14 pengujian lolos (Harian 1 slot & snapshot harga, Bulanan 4 slot +7 hari, Bulanan ditolak jika ada tanggal bentrok beserta rincian tanggal, slot ditutup & sesi lewat ditolak, proteksi konkurensi database gagal ramah, pendaftaran ringkas tamu inline langsung booking, batas maksimal pending booking per user, command scheduler `bookings:expire` membersihkan hold tanpa menyentuh paid, pembatalan booking oleh pemesan membebaskan slot, otorisasi BookingPolicy, snapshot harga kebal perubahan setting, peran owner dilarang booking, tiga bagian Booking Saya, penanda "Punyamu" pada sel jadwal).
 - `Tests\Feature\AuthTest`: 13 pengujian lolos (normalisasi HP, registrasi, login HP & email, akun nonaktif, rate limit, redirect peran, intended URL, otorisasi 403, logout, artisan commands, ubah profil & password).
@@ -300,4 +380,4 @@ php artisan test
 - `Tests\Feature\LandingPageTest`: 9 pengujian lolos.
 - `Tests\Unit\ExampleTest` & `Tests\Feature\ExampleTest`: 2 pengujian lolos.
 
-**Total**: **84 Tests Passed (372 assertions)**, 100% hijau.
+**Total**: **95 Tests Passed (456 assertions)**, 100% hijau.
